@@ -4,7 +4,11 @@ Thumbs.db
 *.log
 *.tmp
 
-# === Python / Flask (backend/) ===
+# 
+__pycache__/
+.env
+
+# backend/
 backend/__pycache__/
 backend/*.py[cod]
 backend/.env
@@ -16,7 +20,7 @@ backend/*.sqlite3
 backend/migrations/
 backend/*.db
 
-# === Node / React (frontend/) ===
+# frontend/
 frontend/node_modules/
 frontend/.env
 frontend/.env.local
