@@ -1,0 +1,226 @@
+  /* Modern Navbar Styles */
+  .custom-navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    backdrop-filter: blur(10px);
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .custom-navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+    z-index: -1;
+  }
+
+  /* Brand Styling */
+  .brand-logo {
+    color: #ffffff !important;
+    text-decoration: none;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .brand-logo:hover {
+    color: #f8f9ff !important;
+    transform: translateY(-1px);
+  }
+
+  .brand-icon {
+    display: inline-block;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .text-gradient {
+    background: linear-gradient(45deg, #ffffff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Custom Toggler */
+  .custom-toggler {
+    padding: 0.375rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .custom-toggler:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  .custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+
+  /* Navigation Items */
+  .nav-pills-custom {
+    gap: 0.5rem;
+  }
+
+  .nav-item-custom {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-item-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .nav-item-custom:hover::before {
+    left: 100%;
+  }
+
+  .nav-item-custom:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .nav-item-custom.active {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-icon {
+    font-size: 1.1em;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+  }
+
+  /* Auth Section */
+  .auth-section {
+    gap: 1rem;
+  }
+
+  .signin-wrapper {
+    position: relative;
+  }
+
+  .btn-signin {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-signin:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    color: #ffffff;
+  }
+
+  .user-button-wrapper {
+    position: relative;
+  }
+
+  .user-avatar-custom {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .user-avatar-custom:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 991.98px) {
+    .custom-navbar {
+      padding: 0.5rem 0;
+    }
+    
+    .nav-pills-custom {
+      margin-top: 1rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .nav-item-custom {
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+    }
+    
+    .auth-section {
+      margin-top: 1rem;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .brand-logo {
+      font-size: 1.5rem !important;
+    }
+    
+    .brand-icon {
+      font-size: 1.2em;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .custom-navbar {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    }
+    
+    .custom-navbar::before {
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+    }
+  }
+
+  /* Accessibility improvements */
+  .nav-item-custom:focus,
+  .btn-signin:focus,
+  .brand-logo:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }

@@ -1,0 +1,39 @@
+# === Global ===
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# === Python / Flask (backend/) ===
+backend/__pycache__/
+backend/*.py[cod]
+backend/.env
+backend/instance/
+backend/.venv/
+backend/venv/
+backend/env/
+backend/*.sqlite3
+backend/migrations/
+backend/*.db
+
+# === Node / React (frontend/) ===
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+frontend/build/
+frontend/dist/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*~

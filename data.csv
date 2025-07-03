@@ -1,0 +1,6 @@
+database_name,database_type,database_string,user_id
+SalesDB,PostgreSQL,postgresql://alice:pass@host:5432/sales,clerk_user_001
+AnalyticsDB,MySQL,mysql://bob:pass@host:3306/analytics,clerk_user_002
+InventoryDB,PostgreSQL,postgresql://charlie:pass@host:5432/inventory,clerk_user_003
+HRDB,SQLite,sqlite:///hr.db,clerk_user_004
+FinanceDB,PostgreSQL,postgresql://ed:pass@host:5432/finance,clerk_user_005
