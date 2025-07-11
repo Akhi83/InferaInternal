@@ -98,3 +98,34 @@ def delete_database(database_id):
 
 
 
+@database_bp.route("/api/databases/<string:database_id>", methods=["PUT"])
+def update_database(database_id):
+    user = verify_clerk_token()
+    user_id = user["sub"]
+
+    data = request.get_json()
+    db_conn = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
+
+    if not db_conn:
+        return jsonify({"error": "Database not found or unauthorized"}), 404
+
+    # Update fields
+    db_conn.database_type = data.get("database_type", db_conn.database_type)
+    db_conn.database_string = data.get("database_string", db_conn.database_string)
+    db_conn.database_name = data.get("database_name", db_conn.database_name)
+
+    # 🔁 Re-fetch schema after connection string update
+    try:
+        engine = create_engine(db_conn.database_string)
+        schema = get_db_schema(engine)
+        print("✅ Updated schema fetched:", schema)
+        db_conn.database_schema_json = json.dumps(schema)
+    except Exception as e:
+        print("❌ Failed to fetch updated schema:", e)
+
+    db.session.commit()
+    return jsonify(db_conn.to_dict())
+
+
+
+

@@ -2,12 +2,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import DataCard from './Cards';
-import './DBGrid.css'; // Custom CSS file
+import './DBGrid.css';
 import AddDatabaseModal from './addDatabaseModal';
 import { useEffect, useState } from 'react';
 import axios from 'axios'; 
 import { useAuth } from "@clerk/clerk-react";
-
 
 function AddDatabaseCard({ onAddDatabase }) {
   return (
@@ -28,10 +27,7 @@ function AddDatabaseCard({ onAddDatabase }) {
           Connect a new database to your dashboard and start monitoring its performance.
         </p>
         
-        <button 
-          className="add-database-btn"
-          aria-label="Add new database connection"
-        >
+        <button className="add-database-btn" aria-label="Add new database connection">
           <span className="btn-text">Connect Database</span>
           <div className="btn-shine"></div>
         </button>
@@ -42,22 +38,21 @@ function AddDatabaseCard({ onAddDatabase }) {
   );
 }
 
-
 function DBGrid({ onAddDatabase }) {
-
   const { getToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
-    const [cardData, setCardData] = useState([]);
+  const [cardData, setCardData] = useState([]);
+  const [editData, setEditData] = useState(null); // for editing
 
   const fetchDatabases = async () => {
     try {
-        const token = await getToken(); 
-        const res = await axios.get('/api/databases', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCardData(res.data);
+      const token = await getToken(); 
+      const res = await axios.get('/api/databases', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCardData(res.data);
     } catch (error) {
       console.error("Error fetching databases:", error);
     }
@@ -66,46 +61,53 @@ function DBGrid({ onAddDatabase }) {
   useEffect(() => {
     fetchDatabases();
   }, []);
-  
+
   const handleAddDatabase = () => {
-    if (onAddDatabase) {
-      onAddDatabase();
-    } else {
-        setShowModal(true);
+    setEditData(null);
+    setShowModal(true);
+  };
+
+  const handleEditCard = (database_id) => {
+    const dbToEdit = cardData.find(db => db.database_id === database_id);
+    if (dbToEdit) {
+      setEditData(dbToEdit);
+      setShowModal(true);
     }
   };
 
-const handleDeleteCard = async (database_id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this database?");
-  if (!confirmDelete) return;
+  const handleDeleteCard = async (database_id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this database?");
+    if (!confirmDelete) return;
 
-  try {
-    const token = await getToken();
-    await axios.delete(`/api/databases/${database_id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    // Refresh cards after successful deletion
-    fetchDatabases();
-  } catch (error) {
-    console.error("Failed to delete database:", error);
-    alert("Failed to delete database. Please try again.");
-  }
-};
-
-
+    try {
+      const token = await getToken();
+      await axios.delete(`/api/databases/${database_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchDatabases();
+    } catch (error) {
+      console.error("Failed to delete database:", error);
+      alert("Failed to delete database. Please try again.");
+    }
+  };
 
   return (
     <div className="db-grid-wrapper">
       <Container className="db-grid-container">
-
         {showModal && (
-          <AddDatabaseModal 
+          <AddDatabaseModal
             show={showModal}
-            onHide={() => setShowModal(false)}
+            onHide={() => {
+              setShowModal(false);
+              setEditData(null);
+            }}
             onDatabaseAdd={fetchDatabases}
+            onDatabaseEdit={fetchDatabases}
+            mode={editData ? "edit" : "add"}
+            initialData={editData}
           />
         )}
+
         {/* Header Section */}
         <div className="grid-header">
           <div className="header-content">
@@ -119,7 +121,9 @@ const handleDeleteCard = async (database_id) => {
           </div>
           <div className="header-stats">
             <div className="stat-item">
-              <span className="stat-number">{cardData.filter(db => db.database_status === 'Active').length}</span>
+              <span className="stat-number">
+                {cardData.filter(db => db.database_status === 'Active').length}
+              </span>
               <span className="stat-label">Active</span>
             </div>
             <div className="stat-divider"></div>
@@ -135,7 +139,11 @@ const handleDeleteCard = async (database_id) => {
           {cardData.map((card, index) => (
             <Col key={index} className="grid-col">
               <div className="card-wrapper" style={{ '--delay': `${index * 0.1}s` }}>
-                <DataCard {...card} onDelete={() => handleDeleteCard(card.database_id)} />
+                <DataCard 
+                  {...card} 
+                  onDelete={() => handleDeleteCard(card.database_id)} 
+                  onEdit={() => handleEditCard(card.database_id)} 
+                />
               </div>
             </Col>
           ))}
@@ -147,8 +155,6 @@ const handleDeleteCard = async (database_id) => {
             </div>
           </Col>
         </Row>
-
-        {/* Footer Info */}
       </Container>
     </div>
   );
