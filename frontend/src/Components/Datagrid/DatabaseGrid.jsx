@@ -45,7 +45,6 @@ function AddDatabaseCard({ onAddDatabase }) {
 
 function DBGrid({ onAddDatabase }) {
 
-
   const { getToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
     const [cardData, setCardData] = useState([]);
@@ -95,6 +94,7 @@ const handleDeleteCard = async (database_id) => {
 };
 
 
+
   return (
     <div className="db-grid-wrapper">
       <Container className="db-grid-container">
@@ -119,7 +119,7 @@ const handleDeleteCard = async (database_id) => {
           </div>
           <div className="header-stats">
             <div className="stat-item">
-              <span className="stat-number">{cardData.filter(db => db.Status === 'Active').length}</span>
+              <span className="stat-number">{cardData.filter(db => db.database_status === 'Active').length}</span>
               <span className="stat-label">Active</span>
             </div>
             <div className="stat-divider"></div>

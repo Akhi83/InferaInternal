@@ -4,3 +4,10 @@ python-dotenv
 psycopg2-binary
 sqlalchemy
 python-jose
+streamlit
+pandas
+plotly
+openai
+pymysql
+cryptography>=3.2
+supabase

@@ -5,15 +5,15 @@ export default function Footer() {
             <span style={separatorStyle}>|</span>
             <a href="#docs" style={linkStyle}>Documentation</a>
             <span style={separatorStyle}>|</span>
-            <p style={copyrightStyle}>© 2025 <span style={companyStyle}>Your Company</span></p>
+            <p style={copyrightStyle}>© 2021 <span style={companyStyle}>EmergeFlow Technologies</span></p>
         </footer>
     );
 }
 
 const footerStyle = {
-    background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #1e1b4b 100%)',
+    background: 'linear-gradient(180deg, #2c3e50, #34495e)',
     color: 'white',
-    padding: '1.5rem',
+    padding: '1.25rem',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

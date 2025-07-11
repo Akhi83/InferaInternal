@@ -1,18 +1,33 @@
+/* Override Bootstrap's default modal styling */
+.custom-modal .modal-content {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 15px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.custom-modal .modal-dialog {
+  margin: 1.75rem auto;
+}
+
 .modal-content-wrapper {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 15px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
-  overflow: hidden; /* Ensures child elements don't overflow rounded corners */
+  overflow: hidden;
+  position: relative;
 }
 
 .custom-header {
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border: none !important;
   color: white;
   padding: 1.5rem 1.5rem 0;
-  border-radius: 15px 15px 0 0; /* Match parent top corners */
+  border-radius: 15px 15px 0 0;
+  position: relative;
 }
 
 .modal-title-text {
@@ -23,9 +38,9 @@
 .custom-body {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
-  border-radius: 0 0 15px 15px; /* Match parent bottom corners */
+  border-radius: 0 0 15px 15px;
   padding: 1.5rem;
-  margin: 0; /* Remove any default margins */
+  margin: 0;
 }
 
 .form-container {
@@ -109,30 +124,23 @@
   box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6) !important;
 }
 
-.modal-header .btn-close {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  opacity: 0.8;
-  transition: all 0.3s ease;
-}
-
-.modal-header .btn-close:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-/* Additional fixes for corner consistency */
-.modal-content {
-  border-radius: 15px;
-  border: none;
-  overflow: hidden;
-}
-
-.modal-dialog {
-  margin: 1.75rem auto;
-}
-
-/* Ensure Bootstrap modal backdrop doesn't interfere */
+/* Enhanced backdrop blur */
 .modal-backdrop {
   backdrop-filter: blur(5px);
+}
+
+/* Ensure proper corner handling across all browsers */
+.modal-content-wrapper * {
+  box-sizing: border-box;
+}
+
+/* Additional fix for border radius inheritance */
+.custom-modal .modal-header:first-child {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.custom-modal .modal-body:last-child {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 }

@@ -1,24 +1,59 @@
-import React from 'react';
-import { ListGroup, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { FiMenu, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
+import './SidePanel.css';
 
-const SidePanel = ({ chats, onSelectChat, onNewChat, activeChatId }) => {
+const SidePanel = ({ chats, onSelectChat, onNewChat, onDeleteChat, activeChatId }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  
+  if (collapsed) {
+    return (
+      <div className="side-panel collapsed">
+        <button className="toggle-btn" onClick={() => setCollapsed(false)}>
+          <FiMenu />
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-3">
-      <Button variant="primary" className="mb-3" onClick={onNewChat}>
-        + New Chat
-      </Button>
-      <ListGroup>
-        {chats.map(chat => (
-          <ListGroup.Item
-            key={chat.id}
-            active={chat.id === activeChatId}
-            onClick={() => onSelectChat(chat.id)}
-            style={{ cursor: 'pointer' }}
+    <div className="side-panel">
+      <div className="side-panel-header">
+        <h5 className="panel-title">Chats</h5>
+        <button className="toggle-btn" onClick={() => setCollapsed(true)}>
+          <FiX />
+        </button>
+      </div>
+
+      <button className="new-chat-btn" onClick={onNewChat}>
+        <FiPlus className="btn-icon" />
+        <span className="btn-text">New Chat</span>
+      </button>
+
+      <div className="chat-list">
+        {chats.map((chat) => (
+          <div
+            key={chat.chat_id}
+            className={`chat-item ${chat.chat_id === activeChatId ? 'active' : ''}`}
           >
-            {chat.title || `Chat ${chat.id.slice(0, 6)}`}
-          </ListGroup.Item>
+            <div
+              className="chat-info"
+              onClick={() => onSelectChat(chat.chat_id)}
+              title={chat.title}
+            >
+              <div className="chat-title">
+                {chat.title || `Chat ${chat.chat_id.slice(0, 6)}`}
+              </div>
+            </div>
+            <button
+              className="delete-icon"
+              onClick={() => onDeleteChat(chat.chat_id)}
+              title="Delete chat"
+            >
+              <FiTrash2 size={14} />
+            </button>
+          </div>
         ))}
-      </ListGroup>
+      </div>
     </div>
   );
 };

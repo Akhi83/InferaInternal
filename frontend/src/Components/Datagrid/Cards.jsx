@@ -1,36 +1,8 @@
-/*
-
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-
-function DataCard({ database_type, database_name, Status, created_at }) {
-  return (
-    <Card style={{ width: '18rem' }} className="mb-3 shadow-sm">
-      <Card.Body>
-        <Card.Title>
-          {database_type}
-        </Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">{database_name}</Card.Subtitle>
-        <Card.Text>Status: {Status}</Card.Text>
-        <Card.Text>Last Synced: {created_at}</Card.Text>
-        <div className="d-flex gap-2">
-          <Button variant="primary" size="sm">Edit</Button>
-          <Button variant="danger" size="sm">Remove</Button>
-        </div>
-      </Card.Body>
-    </Card>
-  );
-}
-
-export default DataCard;
-
-*/
-
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import './DataCard.css'; // Custom CSS file
 
-function DataCard({ database_id, database_type, database_name, created_at, onDelete, onEdit }) {
+function DataCard({ database_id, database_type, database_name, database_status, created_at, onDelete, onEdit }) {
 
   const handleEditCard = () => {
     onEdit(database_id);
@@ -70,9 +42,12 @@ function DataCard({ database_id, database_type, database_name, created_at, onDel
     return colors[database] || '#667eea';
   };
 
-  const getStatusColor = () => {
-    return '#10b981';
-  };
+const getStatusColor = (status) => {
+  if (status === "Active") return "#10b981";    // Green
+  if (status === "Inactive") return "#ef4444";  // Red
+  return "#d1d5db"; // Gray for unknown
+};
+
 
   const formatSyncTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -90,7 +65,7 @@ function DataCard({ database_id, database_type, database_name, created_at, onDel
 
   const dbIcon = getDBIcon(database_type);
   const dbColor = getDBColor(database_type);
-  const statusColor = getStatusColor();
+  const statusColor = getStatusColor(database_status);
   const syncTime = formatSyncTime(created_at);
 
   return (
@@ -110,11 +85,11 @@ function DataCard({ database_id, database_type, database_name, created_at, onDel
           
           <div className="status-badge-wrapper">
             <div 
-              className={`status-badge ${"active"}`}
+              className={`status-badge ${database_status.toLowerCase()}`}
               style={{ backgroundColor: statusColor }}
             >
               <div className="status-dot"></div>
-              <span className="status-text">{"Active"}</span>
+              <span className="status-text">{database_status}</span>
             </div>
           </div>
         </div>

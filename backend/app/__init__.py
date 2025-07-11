@@ -15,6 +15,10 @@ def create_app():
 
     # Import and register routes
     from app.routes.databases import database_bp
+    from app.routes.prompt_response import llm_bp
+    from app.routes.handle_chats import chat_bp
     app.register_blueprint(database_bp)
+    app.register_blueprint(llm_bp)
+    app.register_blueprint(chat_bp)
 
     return app

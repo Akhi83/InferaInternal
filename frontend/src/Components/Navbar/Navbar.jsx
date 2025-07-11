@@ -20,7 +20,12 @@ function NavigationBar({ activeTab, onTabChange }) {
           href="#home" 
           className="brand-logo fw-bold fs-3 text-gradient"
         >
-          EmergeFlow
+          <img 
+            src="\src\Assets\Emergeflow logo-transparent 6.png"
+            alt="Logo" 
+            height="40" 
+            style={{ objectFit: 'contain' }}
+          />
         </Navbar.Brand>
 
         {/* Mobile toggle with custom styling */}   

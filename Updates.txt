@@ -1,0 +1,8 @@
+v2:
+Graphical visualization integrated
+
+v3:
+Chat interface fixed. Visible footer . Window scroll stopped
+
+v4:
+Enabled multi-user login(storage of user data in User table of the database)

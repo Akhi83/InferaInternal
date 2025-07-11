@@ -9,17 +9,23 @@ function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   return (
     <>
-      <SignedIn>
-        <NavigationBar activeTab={activeTab} onTabChange={setActiveTab} /> 
-        {  activeTab == "dashboard" && <DBGrid />  }
-        {  activeTab == "chat" && <ChatContainer /> }
-        <Footer />
+      <SignedIn>        
+        <NavigationBar activeTab={activeTab} onTabChange={setActiveTab} />
+        <div style={{ display: 'flex', flexDirection: 'column', height: '92vh', overflow: 'hidden'  }}>          
+          <div style={{ flexGrow: 1, overflowY: 'auto' }}>
+            {activeTab === "dashboard" && <DBGrid />}
+            {activeTab === "chat" && <ChatContainer />}
+          </div>
+          <Footer />
+        </div>
+        {/* <Footer /> */}
       </SignedIn>
       <SignedOut> 
-          <RedirectToSignIn />
+        <RedirectToSignIn />
       </SignedOut>
-   </>
+    </>
   )
 }
+
 
 export default App;
