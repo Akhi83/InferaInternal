@@ -11,3 +11,4 @@ openai
 pymysql
 cryptography>=3.2
 supabase
+Flask-SQLAlchemy
