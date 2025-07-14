@@ -30,7 +30,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  /* background: linear-gradient(135deg, #667eea, #764ba2); */
+  background: black;
   border: none;
   padding: 0.6rem 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -43,6 +44,6 @@
 }
 
 .input-panel .btn:disabled {
-  background: #cbd5e0;
+  background: #0e0e0e9c;
   cursor: not-allowed;
 }

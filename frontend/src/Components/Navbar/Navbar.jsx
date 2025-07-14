@@ -10,7 +10,7 @@ function NavigationBar({ activeTab, onTabChange }) {
   return (
     <Navbar 
       expand="lg" 
-      className="custom-navbar shadow-lg"
+      className="custom-navbar shadow-sm"
       variant="dark"
       sticky="top"
     >
@@ -48,9 +48,9 @@ function NavigationBar({ activeTab, onTabChange }) {
                 href={`#${tab.toLowerCase()}`}
                 className="nav-item-custom mx-2 px-4 py-2 rounded-pill"
               >
-                <span className="nav-icon me-2">
+                {/* <span className="nav-icon me-2">
                   {tab === "Dashboard" ? "📊" : "💬"}
-                </span>
+                </span> */}
                 {tab}
               </Nav.Link>
             ))}

@@ -97,7 +97,7 @@ export default function AddDatabaseModal({
       <div className="modal-content-wrapper">
         <Modal.Header className="custom-header">
           <Modal.Title className="d-flex align-items-center gap-2">
-            <span style={{ fontSize: '1.5rem' }}>🗄️</span>
+            <span style={{ fontSize: '1.5rem' }}></span>
             <span className="modal-title-text">
               {mode === "edit" ? "Edit Database" : "Add New Database"}
             </span>
@@ -108,7 +108,7 @@ export default function AddDatabaseModal({
           <div className="form-container">
             <div className="form-group">
               <Form.Label className="custom-label">
-                {formData.database_type && getDatabaseIcon(formData.database_type)} Database Type
+                Database Type
               </Form.Label>
               <Form.Select
                 name="database_type"
@@ -118,14 +118,14 @@ export default function AddDatabaseModal({
                 className="custom-input"
               >
                 <option value="">-- Select Database Type --</option>
-                <option value="PostgreSQL">🐘 PostgreSQL</option>
-                <option value="MySQL">🐬 MySQL</option>
-                <option value="SQLite">📦 SQLite</option>
+                <option value="PostgreSQL">PostgreSQL</option>
+                <option value="MySQL">MySQL</option>
+                <option value="SQLite">SQLite</option>
               </Form.Select>
             </div>
 
             <div className="form-group">
-              <Form.Label className="custom-label">🔗 Connection String</Form.Label>
+              <Form.Label className="custom-label">Connection String</Form.Label>
               <Form.Control
                 type="text"
                 name="database_string"
@@ -138,7 +138,7 @@ export default function AddDatabaseModal({
             </div>
 
             <div className="form-group">
-              <Form.Label className="custom-label">🏷️ Database Name</Form.Label>
+              <Form.Label className="custom-label">Database Name</Form.Label>
               <Form.Control
                 type="text"
                 name="database_name"
@@ -153,8 +153,8 @@ export default function AddDatabaseModal({
 
           <div className="button-container">
             <Button variant="secondary" onClick={onHide} className="btn-cancel">Cancel</Button>
-            <Button onClick={handleSubmit} className="btn-connect">
-              {mode === "edit" ? "💾 Save Changes" : "🚀 Connect Database"}
+            <Button onClick={handleSubmit} className="btn-cancel">
+              {mode === "edit" ? "Save Changes" : "Connect Database"}
             </Button>
           </div>
         </Modal.Body>

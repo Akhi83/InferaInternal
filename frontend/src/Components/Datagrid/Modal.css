@@ -12,8 +12,10 @@
 }
 
 .modal-content-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  /* background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%); */
+  background: rgba(0, 0, 0, 0.048);
+  border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
@@ -108,7 +110,8 @@
 }
 
 .btn-connect {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+  /* background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; */
+  background: rgb(182, 10, 10);
   border: none !important;
   border-radius: 8px !important;
   padding: 12px 24px !important;

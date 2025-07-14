@@ -1,8 +1,8 @@
 /* SidePanel.css */
 
 .side-panel {
-  background: linear-gradient(180deg, #2c3e50, #34495e);
-  color: #e0e7ff;
+  background:white;
+  color: #000000b4;
   width: 250px;
   height: 92vh;
   display: flex;
@@ -10,7 +10,7 @@
   padding: 1rem;
   transition: width 0.3s ease;
   overflow: hidden;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
@@ -24,14 +24,14 @@
 .toggle-btn {
   background: none;
   border: none;
-  color: #e0e7ff;
+  color: #000000;
   font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease;
 }
-.toggle-btn:hover {
+/* .toggle-btn:hover {
   color: #ffffff;
-}
+} */
 
 .side-panel-header {
   display: flex;
@@ -50,8 +50,8 @@
 }
 
 .new-chat-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(0, 0, 0, 0.938);
   color: #e0e7ff;
   padding: 0.6rem 1rem;
   border-radius: 10px;
@@ -66,7 +66,7 @@
   overflow: hidden;
 }
 .new-chat-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(34, 33, 33, 0.082);
   transform: translateY(-2px);
 }
 
@@ -81,7 +81,7 @@
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(179, 0, 0, 0.05);
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease;
   white-space: nowrap;
@@ -89,13 +89,14 @@
   text-overflow: ellipsis;
 }
 .chat-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255, 255, 255);
 }
-.chat-item.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  transform: scale(1.02);
-}
+/* .chat-item.active { */
+  /* background: linear-gradient(135deg, #000000, #764ba2); */
+  /* background-color: rgb(0, 0, 0); */
+  /* color: white; */
+  /* transform: scale(1.02); */
+/* } */
 
 .chat-title {
   font-weight: 500;
@@ -117,16 +118,17 @@
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(252, 252, 252);
   transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .chat-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(12, 6, 6, 0.055);
 }
 
 .chat-item.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  /* background: linear-gradient(135deg, #667eea, #764ba2); */
+  background: rgba(27, 27, 27, 0.329);
   color: white;
   transform: scale(1.02);
 }
@@ -142,12 +144,12 @@
 .delete-icon {
   background: none;
   border: none;
-  color: #cbd5e1;
+  color: #000307;
   cursor: pointer;
   padding: 0;
   transition: color 0.2s ease;
 }
 
 .delete-icon:hover {
-  color: #ffffff;
+  color: #333232;
 }

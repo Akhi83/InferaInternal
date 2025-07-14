@@ -80,7 +80,7 @@ const getStatusColor = (status) => {
             >
               <span className="icon-emoji">{dbIcon}</span>
             </div>
-            <div className="connection-pulse" style={{ borderColor: dbColor }}></div>
+            <div  style={{ borderColor: dbColor }}></div>
           </div>
           
           <div className="status-badge-wrapper">
@@ -103,7 +103,7 @@ const getStatusColor = (status) => {
             </Card.Title>
             
             <Card.Subtitle className="db-subtitle">
-              <span className="db-instance-icon">🗂️</span>
+              {/* <span className="db-instance-icon">🗂️</span> */}
               {database_name}
             </Card.Subtitle>
           </div>
@@ -111,7 +111,7 @@ const getStatusColor = (status) => {
           {/* Sync Information */}
           <div className="sync-info">
             <div className="sync-item">
-              <span className="sync-icon">🔄</span>
+              {/* <span className="sync-icon">🔄</span> */}
               <div className="sync-details">
                 <span className="sync-label">Last Synced</span>
                 <span className="sync-time">{syncTime}</span>
@@ -131,7 +131,7 @@ const getStatusColor = (status) => {
               className="action-btn edit-btn"
               onClick={handleEditCard}
             >
-              <span className="btn-icon">✏️</span>
+              {/* <span className="btn-icon">✏️</span> */}
               <span className="btn-text">Edit</span>
               <div className="btn-ripple"></div>
             </Button>
@@ -142,7 +142,7 @@ const getStatusColor = (status) => {
               className="action-btn remove-btn"
               onClick={handleDeleteCard}
             >
-              <span className="btn-icon">🗑️</span>
+              {/* <span className="btn-icon">🗑️</span> */}
               <span className="btn-text">Remove</span>
               <div className="btn-ripple"></div>
             </Button>

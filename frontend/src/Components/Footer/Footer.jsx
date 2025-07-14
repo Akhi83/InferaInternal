@@ -11,18 +11,20 @@ export default function Footer() {
 }
 
 const footerStyle = {
-    background: 'linear-gradient(180deg, #2c3e50, #34495e)',
-    color: 'white',
-    padding: '1.25rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
-    marginTop: 'auto'
+  backgroundColor: '#ffffffff',
+  color: 'black',
+  padding: '1.25rem',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: 'auto',
+  boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.05)', // stronger, deeper shadow
 };
 
+
+
 const linkStyle = {
-    color: '#e2e8f0',
+    color: '#000000ff',
     textDecoration: 'none',
     padding: '0.5rem 1rem',
     borderRadius: '6px',
@@ -30,18 +32,18 @@ const linkStyle = {
 };
 
 const separatorStyle = {
-    color: '#cbd5e0',
+    color: '#000203ff',
     margin: '0 0.75rem',
     fontWeight: '300'
 };
 
 const copyrightStyle = {
-    color: '#cbd5e0',
+    color: '#000000ff',
     margin: '0 0.75rem',
     fontSize: '0.9rem'
 };
 
 const companyStyle = {
-    color: '#fbbf24',
+    color: '#000000ff',
     fontWeight: '600'
 };

@@ -112,7 +112,7 @@ function DBGrid({ onAddDatabase }) {
         <div className="grid-header">
           <div className="header-content">
             <h2 className="grid-title">
-              <span className="title-icon">🗄️</span>
+              {/* <span className="title-icon">🗄️</span> */}
               Database Connections
             </h2>
             <p className="grid-subtitle">

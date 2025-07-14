@@ -9,3 +9,6 @@ Enabled multi-user login(storage of user data in User table of the database)
 
 v5:
 Enabled edit database functionality
+
+v6:
+UI Improved (Light Mode)
