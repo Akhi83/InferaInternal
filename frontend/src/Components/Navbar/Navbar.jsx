@@ -1,12 +1,25 @@
+import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import './NavigationBar.css'; 
+import { Sun, Moon } from 'lucide-react';
+import './NavigationBar.css';
 
 const tabs = ["Dashboard", "Chat"];
 
 function NavigationBar({ activeTab, onTabChange }) {
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "light" ? "dark" : "light");
+  };
+
   return (
     <Navbar 
       expand="lg" 
@@ -15,27 +28,26 @@ function NavigationBar({ activeTab, onTabChange }) {
       sticky="top"
     >
       <Container fluid className="px-4">
-        {/* Left: Brand with enhanced styling */}
         <Navbar.Brand 
           href="#home" 
           className="brand-logo fw-bold fs-3 text-gradient"
         >
-          <img 
+          <img className='light'
             src="\src\Assets\Emergeflow logo-transparent 6.png"
+            alt="Logo" 
+            height="40" 
+            style={{ objectFit: 'contain' }}
+          />
+          <img className='dark'
+            src="\src\Assets\Emergeflow white logo.png"
             alt="Logo" 
             height="40" 
             style={{ objectFit: 'contain' }}
           />
         </Navbar.Brand>
 
-        {/* Mobile toggle with custom styling */}   
-        <Navbar.Toggle 
-          aria-controls="basic-navbar-nav" 
-          className="custom-toggler border-0"
-        />
-
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggler border-0" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {/* Center: Enhanced Nav items */}
           <Nav 
             className="mx-auto nav-pills-custom" 
             activeKey={activeTab} 
@@ -48,17 +60,22 @@ function NavigationBar({ activeTab, onTabChange }) {
                 href={`#${tab.toLowerCase()}`}
                 className="nav-item-custom mx-2 px-4 py-2 rounded-pill"
               >
-                {/* <span className="nav-icon me-2">
-                  {tab === "Dashboard" ? "📊" : "💬"}
-                </span> */}
                 {tab}
               </Nav.Link>
             ))}
           </Nav>
         </Navbar.Collapse>
 
-        {/* Right: Enhanced Auth controls */}
+        {/* Right Side: Theme Toggle + Auth */}
         <div className="auth-section d-flex align-items-center ms-auto">
+          <button 
+            onClick={toggleTheme} 
+            className="theme-toggle-btn"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+
           <SignedOut>
             <div className="signin-wrapper">
               <SignInButton className="btn-signin" />
@@ -66,13 +83,7 @@ function NavigationBar({ activeTab, onTabChange }) {
           </SignedOut>
           <SignedIn>
             <div className="user-button-wrapper">
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "user-avatar-custom"
-                  }
-                }}
-              />
+              <UserButton appearance={{ elements: { avatarBox: "user-avatar-custom" } }} />
             </div>
           </SignedIn>
         </div>

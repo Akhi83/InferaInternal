@@ -1,0 +1,31 @@
+/* AppLayout.css */
+
+/* Main App Wrapper */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 92vh;
+  overflow: hidden;
+}
+
+/* Content Area Scroll */
+.app-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Hide Scrollbar - Webkit (Chrome, Edge, Safari) */
+.app-content::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* Firefox */
+.app-content {
+  scrollbar-width: none; /* Removes scrollbar but keeps scroll functionality */
+}
+
+/* For IE/Edge Legacy (optional fallback) */
+.app-content {
+  -ms-overflow-style: none; 
+}

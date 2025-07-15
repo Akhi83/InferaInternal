@@ -81,9 +81,6 @@ def handle_llm_query():
     }
     }
 
-    print("Generated plot:", visualization_json)
-
-
     new_message = Message(
     message_id=str(uuid.uuid4()),
     # sender='user',

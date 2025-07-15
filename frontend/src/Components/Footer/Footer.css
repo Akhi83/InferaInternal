@@ -1,0 +1,46 @@
+.footer {
+  background: var(--bg-white);
+  color: var(--text-dark);
+  padding: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  color: var(--text-dark);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+.footer a:hover {
+  background: var(--hover-bg);
+  color: #000;
+}
+
+[data-theme="dark"] .footer a:hover {
+  background: var(--hover-bg);
+  color: #fff;
+}
+
+.footer-separator {
+  color: var(--text-dark);
+  margin: 0 0.75rem;
+  font-weight: 300;
+}
+
+.footer-copy {
+  color: var(--text-dark);
+  margin: 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.footer-company {
+  font-weight: 600;
+  color: var(--text-dark);
+}

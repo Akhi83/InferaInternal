@@ -83,15 +83,6 @@ export default function AddDatabaseModal({
     }
   };
 
-  const getDatabaseIcon = (type) => {
-    const icons = {
-      'PostgreSQL': '🐘',
-      'MySQL': '🐬',
-      'SQLite': '📦'
-    };
-    return icons[type] || '🗄️';
-  };
-
   return (
     <Modal show={show} onHide={onHide} size="lg" centered backdrop="static" className="custom-modal">
       <div className="modal-content-wrapper">

@@ -1,8 +1,8 @@
 /* SidePanel.css */
 
 .side-panel {
-  background:white;
-  color: #000000b4;
+  background:var(--hover-bg);
+  color: var(--text-dark);
   width: 250px;
   height: 92vh;
   display: flex;
@@ -24,7 +24,7 @@
 .toggle-btn {
   background: none;
   border: none;
-  color: #000000;
+  color: var(--text-dark);
   font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -50,9 +50,9 @@
 }
 
 .new-chat-btn {
-  background: rgba(0, 0, 0, 0);
-  border: 1px solid rgba(0, 0, 0, 0.938);
-  color: #e0e7ff;
+  background: var(--bg-dark);
+  border: 1px solid var(--bg-light);
+  color: var(--text-dark);
   padding: 0.6rem 1rem;
   border-radius: 10px;
   margin-bottom: 1rem;
@@ -66,37 +66,16 @@
   overflow: hidden;
 }
 .new-chat-btn:hover {
-  background: rgba(34, 33, 33, 0.082);
-  transform: translateY(-2px);
+  transform: scale(1.01);
 }
 
 .chat-list {
   overflow-y: auto;
   overflow-x: hidden; /* Prevent horizontal scroll */
   flex-grow: 1;
-  padding-right: 0.25rem; /* Give space to scrollbar if needed */
+  padding: 0 0.25rem; /* Give space to scrollbar if needed */
 }
 
-.chat-item {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  background: rgba(179, 0, 0, 0.05);
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chat-item:hover {
-  background: rgb(255, 255, 255);
-}
-/* .chat-item.active { */
-  /* background: linear-gradient(135deg, #000000, #764ba2); */
-  /* background-color: rgb(0, 0, 0); */
-  /* color: white; */
-  /* transform: scale(1.02); */
-/* } */
 
 .chat-title {
   font-weight: 500;
@@ -118,18 +97,18 @@
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   border-radius: 8px;
-  background: rgb(252, 252, 252);
+  background: var(--bg-light);
   transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .chat-item:hover {
-  background: rgba(12, 6, 6, 0.055);
+  background: var(--bg-dark);
 }
 
 .chat-item.active {
   /* background: linear-gradient(135deg, #667eea, #764ba2); */
-  background: rgba(27, 27, 27, 0.329);
-  color: white;
+  background: var(--border-light);
+  color: var(--text-dark);
   transform: scale(1.02);
 }
 
@@ -144,12 +123,8 @@
 .delete-icon {
   background: none;
   border: none;
-  color: #000307;
+  color: var(--text-dark);
   cursor: pointer;
   padding: 0;
   transition: color 0.2s ease;
-}
-
-.delete-icon:hover {
-  color: #333232;
 }

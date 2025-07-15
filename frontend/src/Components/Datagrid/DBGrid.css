@@ -1,6 +1,7 @@
-/* Database Grid Styles - White Theme */
+/* Database Grid Styles */
+
 .db-grid-wrapper {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: var(--hover-bg);
   min-height: 100vh;
   padding: 2rem 0;
   position: relative;
@@ -9,14 +10,7 @@
 .db-grid-wrapper::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 0, 0, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 40% 80%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
@@ -25,14 +19,14 @@
   z-index: 1;
 }
 
-/* Header Styles */
+/* Header */
 .grid-header {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-white);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 2rem;
   margin-bottom: 2rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
@@ -44,7 +38,7 @@
 .header-content h2.grid-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-dark);
   margin: 0;
   display: flex;
   align-items: center;
@@ -63,7 +57,7 @@
 }
 
 .grid-subtitle {
-  color: #6b7280;
+  color: var(--text-dark);
   font-size: 1.1rem;
   margin: 0.5rem 0 0 0;
   font-weight: 400;
@@ -73,10 +67,10 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--hover-bg);
   padding: 1rem 1.5rem;
   border-radius: 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
 }
 
 .stat-item {
@@ -89,12 +83,12 @@
 .stat-number {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-dark);
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-dark);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -103,10 +97,10 @@
 .stat-divider {
   width: 1px;
   height: 40px;
-  background: linear-gradient(to bottom, transparent, #d1d5db, transparent);
+  background: linear-gradient(to bottom, transparent, var(--border-light), transparent);
 }
 
-/* Grid Styles */
+/* Grid */
 .db-grid {
   position: relative;
 }
@@ -122,39 +116,26 @@
 }
 
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Add Database Card */
 .add-database-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+  background: var(--bg-light);
   backdrop-filter: blur(20px);
-  border: 2px dashed rgba(0, 0, 0, 0.15);
+  border: 2px dashed var(--border-light);
   border-radius: 20px;
   padding: 2rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-/* .add-database-card:hover {
-  border-color: rgba(0, 0, 0, 0.3);
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-} */
 
 .add-card-content {
   position: relative;
@@ -172,9 +153,9 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  background: var(--add-icon-bg);
+  color: var(--add-icon-color);
   border-radius: 50%;
-  color: white;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -205,12 +186,12 @@
 .add-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-dark);
   margin-bottom: 1rem;
 }
 
 .add-description {
-  color: #6b7280;
+  color: var(--text-dark);
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -220,9 +201,9 @@
 }
 
 .add-database-btn {
-  background: white;
+  background: var(--bg-dark);
   border: none;
-  color: white;
+  color: var(--text-dark);
   padding: 1rem 2rem;
   border-radius: 50px;
   font-weight: 600;
@@ -230,13 +211,12 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: var(--transition);
+  box-shadow: 0 4px 15px var(--nav-hover-shadow);
 }
 
 .add-database-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .add-database-btn:active {
@@ -244,6 +224,7 @@
 }
 
 .btn-text {
+  color: var(--text-dark) !important;
   position: relative;
   z-index: 2;
 }
@@ -254,7 +235,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, var(--nav-hover-shadow), transparent);
   transition: left 0.6s ease;
 }
 
@@ -273,15 +254,13 @@
   transition: opacity 0.3s ease;
 }
 
-.add-database-card:hover .card-glow {
-  opacity: 1;
-}
 
-/* Footer Styles */
+
+/* Footer */
 .grid-footer {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-light);
 }
 
 .footer-content {
@@ -293,7 +272,7 @@
 }
 
 .footer-text {
-  color: #6b7280;
+  color: var(--hover-bg);
   font-size: 0.9rem;
 }
 
@@ -315,107 +294,33 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.2);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 1199.98px) {
-  .grid-title {
-    font-size: 2.2rem !important;
-  }
+  .grid-title { font-size: 2.2rem !important; }
 }
 
 @media (max-width: 991.98px) {
-  .grid-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .header-stats {
-    width: 100%;
-    justify-content: center;
-  }
+  .grid-header { flex-direction: column; text-align: center; }
+  .header-stats { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 767.98px) {
-  .db-grid-wrapper {
-    padding: 1rem 0;
-  }
-  
-  .grid-header {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .grid-title {
-    font-size: 1.8rem !important;
-  }
-  
-  .add-database-card {
-    padding: 1.5rem;
-    min-height: 280px;
-  }
-  
-  .add-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .add-title {
-    font-size: 1.3rem;
-  }
-  
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-  }
+  .db-grid-wrapper { padding: 1rem 0; }
+  .grid-header { padding: 1.5rem; margin-bottom: 1.5rem; }
+  .grid-title { font-size: 1.8rem !important; }
+  .add-database-card { padding: 1.5rem; min-height: 280px; }
+  .add-icon { width: 60px; height: 60px; }
+  .add-title { font-size: 1.3rem; }
+  .footer-content { flex-direction: column; text-align: center; }
 }
 
 @media (max-width: 575.98px) {
-  .header-stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .stat-divider {
-    display: none;
-  }
+  .header-stats { flex-direction: column; gap: 1rem; }
+  .stat-divider { display: none; }
 }
 
-/* Light mode optimized (removed dark mode section) */
-.db-grid-wrapper {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-}
-
-.grid-header {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-.add-database-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-  border-color: rgba(0, 0, 0, 0.15);
-}
-
-.add-title {
-  color: #374151;
-}
-
-.add-description {
-  color: #6b7280;
-}
-
-.grid-subtitle {
-  color: #6b7280;
-}
-
-.footer-text {
-  color: #6b7280;
-}
+/* DBGrid Scrollbar Styling (similar to display panel) */

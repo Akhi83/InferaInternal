@@ -12,3 +12,6 @@ Enabled edit database functionality
 
 v6:
 UI Improved (Light Mode)
+
+v7:
+Added Dark Mode + UI Further Enhanced 

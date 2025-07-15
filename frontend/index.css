@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+
+
+:root {   
+  --bg-dark: #ffffff;
+  --bg-white: #ffffff;
+  --text-dark: #202124;
+  --bg-light: #ffffff;
+  --hover-bg: #f1f3f4;
+  --bg-inverted: #34343a;
+  --border-light: #dadce0;
+  --nav-hover-shadow: rgba(0, 0, 0, 0.08);
+  --nav-active-bg: rgba(0,0,0,0.08);
+  --transition: 0.3s ease;
+  --add-icon-bg: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  --add-icon-color: #fff;
+}
+
+[data-theme="dark"] {
+  --bg-dark: rgba(0,0,0,0.244);
+  --bg-white: #34343a;
+  --text-dark: #e8eaed;
+  --bg-light: #34343a;
+  --hover-bg: #3e3f40;
+  --bg-inverted: #e8eaed;
+  --border-light: #5f6368;
+  --nav-hover-shadow: rgba(255, 255, 255, 0.08);
+  --nav-active-bg: rgba(255,255,255,0.08);
+  --add-icon-bg: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  --add-icon-color: #fff;
+}
+
+
+html,
+body, #root{
+  height: 100%;
+  margin: 0;
+  padding: 0;  
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  /* Hide scrollbars on all browsers */
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* Internet Explorer 10+ */
+}
+
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari */
+}
+
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
+display: none;
+}

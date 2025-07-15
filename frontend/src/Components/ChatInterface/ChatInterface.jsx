@@ -4,7 +4,6 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { useAuth } from '@clerk/clerk-react';
 import SidePanel from './SidePanel';
 import DisplayPanel from './DisplayPanel';
-import InputPanel from './InputPanel';
 import Header from './DBHeader';
 
 const ChatContainer = () => {

@@ -5,7 +5,7 @@
 }
 
 .data-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+  background: var(--bg-white) !important;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 20px !important;
@@ -17,21 +17,11 @@
   min-height: 320px;
 }
 
-/* Force override any existing background colors */
-.data-card,
-.data-card * {
-  background-color: transparent !important;
-}
 
-.data-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
-}
 
 .data-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
   border-color: rgba(0, 0, 0, 0.2) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
 }
 
 /* Card Header */
@@ -60,7 +50,7 @@
   position: relative;
   transition: transform 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: var(--hover-bg);
 }
 
 .db-icon:hover {
@@ -156,14 +146,14 @@
 .db-name {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #000000 !important;
+  color: var(--text-dark);
   display: block;
 }
 
 .title-underline {
   height: 3px;
   width: 40px;
-  background: linear-gradient(135deg, #000000 0%, #333333 100%);
+  background: var(--text-dark);
   border-radius: 2px;
   margin-top: 0.5rem;
   transition: width 0.3s ease;
@@ -174,7 +164,7 @@
 }
 
 .db-subtitle {
-  color: #000000 !important;
+  color: var(--text-dark) !important;
   font-size: 1rem !important;
   font-weight: 500 !important;
   display: flex;
@@ -186,24 +176,13 @@
 .db-instance-icon {
   font-size: 1rem;
   opacity: 0.8;
-  color: #000000 !important;
-}
-
-/* Additional overrides to ensure no colored backgrounds */
-.data-card .card-header,
-.data-card .card-body,
-.data-card .card-header-custom,
-.data-card .card-body-custom,
-.data-card .db-info,
-.data-card .sync-item {
-  background: transparent !important;
-  background-color: transparent !important;
+  color: var(--text-dark);
 }
 
 /* Ensure sync info background is consistent */
 .sync-info {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--hover-bg);
+  border: 1px solid var(--bg-dark);
   border-radius: 12px;
   padding: 1rem;
   position: relative;
@@ -234,19 +213,19 @@
 
 .sync-label {
   font-size: 0.85rem;
-  color: #000000 !important;
+  color: var(--text-dark);
   font-weight: 500;
 }
 
 .sync-time {
   font-size: 1rem;
-  color: #000000 !important;
+  color: var(--text-dark);
   font-weight: 600;
 }
 
 .full-timestamp {
   font-size: 0.75rem;
-  color: #000000 !important;
+  color: var(--text-dark) !important;
   margin-top: 0.5rem;
   text-align: right;
 }
@@ -269,28 +248,20 @@
   font-weight: 600 !important;
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease !important;
+  transition: var(--transition);
   border-width: 2px !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  color: #000000 !important;
-  border-color: #000000 !important;
+  background: var(--bg-dark) !important;
+  color: var(--text-dark);
+  border-color: var(--hover-bg) !important;
 }
 
 .action-btn:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.9) !important;
-  color: #000000 !important;
-  border-color: #000000 !important;
+  background-color: var(--hover-bg) !important;
 }
 
 .action-btn:active {
   transform: translateY(0);
-}
-
-.btn-icon {
-  font-size: 1rem;
-  transition: transform 0.3s ease;
-  color: #000000 !important;
 }
 
 .action-btn:hover .btn-icon {
@@ -299,47 +270,9 @@
 
 .btn-text {
   font-size: 0.9rem;
-  color: #000000 !important;
+  color: var(--text-dark);
 }
 
-.btn-ripple {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.1);
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.action-btn:active .btn-ripple {
-  width: 120px;
-  height: 120px;
-}
-
-.edit-btn {
-  color: #000000 !important;
-  border-color: #0000002a !important;
-}
-
-.edit-btn:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border-color: #000000 !important;
-  color: #000000 !important;
-}
-
-.remove-btn {
-  color: #000000 !important;
-  border-color: #00000023 !important;
-}
-
-.remove-btn:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border-color: #000000 !important;
-  color: #000000 !important;
-}
 
 /* Card Footer */
 .card-footer-custom {
@@ -418,7 +351,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(0, 0, 0, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--hover-bg) 0%, transparent 70%);
   opacity: 0;
   border-radius: 50%;
   filter: blur(20px);
@@ -427,9 +360,7 @@
   z-index: -1;
 }
 
-.data-card:hover .card-glow-effect {
-  opacity: 1;
-}
+
 
 /* Status Badge Colors */
 .status-badge.active {
