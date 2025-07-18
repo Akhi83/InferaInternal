@@ -111,7 +111,6 @@
   border-color: rgba(0,0,0,0.2);
   color: #000 !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--nav-hover-shadow);
 }
 
 [data-theme="dark"] .nav-item-custom:hover {
@@ -122,7 +121,6 @@
 .nav-item-custom.active {
   background: var(--nav-active-bg);
   border-color: rgba(0,0,0,0.2);
-  box-shadow: 0 4px 15px var(--nav-hover-shadow);
   color: #000 !important;
 }
 

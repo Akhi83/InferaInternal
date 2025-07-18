@@ -7,19 +7,19 @@ function DataCard({ database_id, database_type, database_name, database_status, 
   const handleEditCard = () => onEdit(database_id);
   const handleDeleteCard = () => onDelete(database_id);
 
-  const getDBIcon = (database) => {
-    const icons = {
-      'MongoDB': '🍃',
-      'PostgreSQL': '🐘', 
-      'MySQL': '🐬',
-      'Redis': '⚡',
-      'Firebase': '🔥',
-      'SQLite': '💾',
-      'Oracle': '🏛️',
-      'Cassandra': '🗄️'
-    };
-    return icons[database] || '💽';
-  };
+  // const getDBIcon = (database) => {
+  //   const icons = {
+  //     'MongoDB': '🍃',
+  //     'PostgreSQL': '🐘', 
+  //     'MySQL': '🐬',
+  //     'Redis': '⚡',
+  //     'Firebase': '🔥',
+  //     'SQLite': '💾',
+  //     'Oracle': '🏛️',
+  //     'Cassandra': '🗄️'
+  //   };
+  //   return icons[database] || '💽';
+  // };
 
   const formatSyncTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -35,7 +35,7 @@ function DataCard({ database_id, database_type, database_name, database_status, 
     return `${diffDays}d ago`;
   };
 
-  const dbIcon = getDBIcon(database_type);
+  // const dbIcon = getDBIcon(database_type);
   const syncTime = formatSyncTime(created_at);
 
   return (
@@ -44,11 +44,12 @@ function DataCard({ database_id, database_type, database_name, database_status, 
         
         {/* Card Header */}
         <div className="card-header-custom">
+{/*           
           <div className="db-icon-wrapper">
             <div className="db-icon">
               <span className="icon-emoji">{dbIcon}</span>
             </div>
-          </div>
+          </div> */}
 
           <div className="status-badge-wrapper">
             <div className={`status-badge ${database_status.toLowerCase()}`}>

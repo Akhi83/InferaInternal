@@ -6,7 +6,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-reac
 import { Sun, Moon } from 'lucide-react';
 import './NavigationBar.css';
 
-const tabs = ["Dashboard", "Chat"];
+const tabs = ["DASHBOARD", "CHAT", "API"];
 
 function NavigationBar({ activeTab, onTabChange }) {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
@@ -44,8 +44,8 @@ function NavigationBar({ activeTab, onTabChange }) {
             height="40" 
             style={{ objectFit: 'contain' }}
           />
-        </Navbar.Brand>
-
+        </Navbar.Brand> 
+        <SignedIn>
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggler border-0" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav 
@@ -65,6 +65,7 @@ function NavigationBar({ activeTab, onTabChange }) {
             ))}
           </Nav>
         </Navbar.Collapse>
+        </SignedIn>
 
         {/* Right Side: Theme Toggle + Auth */}
         <div className="auth-section d-flex align-items-center ms-auto">

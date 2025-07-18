@@ -1,31 +1,49 @@
 # app/routes/llm.py
-from flask import Blueprint, request, jsonify
-from app import db
-from app.models.database_connection import DatabaseConnection
-from app.utils.clerk_auth import verify_clerk_token
-from app.utils.nl2sql_utils import get_openai_response, execute_query, get_db_schema , create_visualization
-from sqlalchemy import create_engine
-from app.models.messageModel import Message
 import uuid
-from datetime import datetime
 import os, json
-from datetime import date, datetime
+from app import db
+from sqlalchemy import create_engine
+from datetime import datetime, date
+from app.utils.api_verification_utils import verify_api_key
+from app.models.messageModel import Message
+from flask import Blueprint, request, jsonify
+from app.models.database_connection import DatabaseConnection
+from app.models.apiModel import ApiKey
+from app.utils.clerk_auth import verify_clerk_token, get_authorization_type
+from app.utils.nl2sql_utils import get_openai_response, execute_query, get_db_schema , create_visualization
 
 llm_bp = Blueprint("llm", __name__)
 def convert_dates(obj):
     if isinstance(obj, (date, datetime)):
         return obj.isoformat()
     return obj
+
 @llm_bp.route("/api/query", methods=["POST"])
-
 def handle_llm_query():
-    user = verify_clerk_token()
-    user_id = user["sub"]
 
-    data = request.get_json()
-    prompt = data.get("prompt")
-    database_id = data.get("database_id")
-    chat_id = data.get("chat_id")
+    auth = get_authorization_type()
+    if auth == "token":
+        user = verify_clerk_token() 
+        user_id = user["sub"]
+
+        data = request.get_json()
+        prompt = data.get("prompt")
+        database_id = data.get("database_id")
+    elif auth == "key":
+        db_key = verify_api_key()
+        data = request.get_json()
+        prompt = data.get("prompt")
+        database_name = data.get("database_name")        
+        user_id = db_key.user_id
+        db_obj = DatabaseConnection.query.filter_by(database_name=database_name, user_id=user_id).first()
+        if not db_obj:
+            return jsonify({"error": "Database not found"}), 404
+
+        database_id = db_obj.database_id  # optional, only if you still need the id
+
+    elif not auth:
+        return jsonify({"error" : "Invalid Authentication Header"}), 400
+
 
     if not prompt or not database_id:
         return jsonify({"error": "Missing prompt or database_id"}), 400
@@ -77,19 +95,16 @@ def handle_llm_query():
         "color": llm_response.get("color"),
         "title": llm_response["title"],
         "why": llm_response["visualization_explanation"],
-        "figure_json": visualization_json  # 🆕 Add this
+        "figure_json": visualization_json  
     }
     }
 
     new_message = Message(
     message_id=str(uuid.uuid4()),
-    # sender='user',
-    chat_id=chat_id,
+    chat_id=data.get("chat_id", None),
     user_id=user_id,
     prompt=prompt,
     response=json.dumps(response_dict, default=convert_dates),
-
-    # created_at=datetime.utcnow()
     )
     db.session.add(new_message)
     db.session.commit()
@@ -97,5 +112,4 @@ def handle_llm_query():
     return jsonify({"message": {
         "prompt": prompt,
         "response": json.dumps(response_dict, default=convert_dates)
-
     }})

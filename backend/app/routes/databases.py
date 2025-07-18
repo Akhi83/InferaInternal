@@ -6,7 +6,6 @@ from app.models.database_connection import DatabaseConnection
 from app.utils.clerk_auth import verify_clerk_token
 from app.utils.nl2sql_utils import get_db_schema
 from app.utils.clerk_user_utils import get_clerk_user_email
-# from app.supabase_client import supabase
 from app.utils.supabase_utils import ensure_user_in_supabase
 import json
 
@@ -109,12 +108,10 @@ def update_database(database_id):
     if not db_conn:
         return jsonify({"error": "Database not found or unauthorized"}), 404
 
-    # Update fields
     db_conn.database_type = data.get("database_type", db_conn.database_type)
     db_conn.database_string = data.get("database_string", db_conn.database_string)
     db_conn.database_name = data.get("database_name", db_conn.database_name)
 
-    # 🔁 Re-fetch schema after connection string update
     try:
         engine = create_engine(db_conn.database_string)
         schema = get_db_schema(engine)

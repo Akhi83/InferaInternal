@@ -1,0 +1,288 @@
+.api-manager-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background: var(--bg-white);
+  color: var(--text-dark);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 15px;
+}
+
+.api-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-section .icon {
+  color: #2563eb;
+}
+
+.create-btn {
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--transition);
+}
+
+.create-btn:hover {
+  background: #1d4ed8;
+}
+
+.api-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-card.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.stat-card.green {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+[data-theme="dark"] .stat-card.blue {
+  background: #1e293b;
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .stat-card.green {
+  background: #022c22;
+  color: #4ade80;
+}
+
+.create-form {
+  background: var(--bg-light);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-form input,
+.create-form textarea,
+.create-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--bg-white);
+  color: var(--text-dark);
+  transition: border var(--transition);
+}
+
+.create-form input:focus,
+.create-form textarea:focus,
+.create-form select:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cancel-btn {
+  background: var(--border-light);
+  color: var(--text-dark);
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: var(--hover-bg);
+}
+
+.api-key-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+
+/* === API Key Row === */
+.api-key-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+
+/* Left Side: Info */
+.key-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.key-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.key-name {
+  font-weight: 600;
+  font-size: 25px;
+}
+
+.desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dates {
+  font-size: 12px;
+  color: var(--text-dark);
+}
+
+/* Status Tags */
+.status {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.revoked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+[data-theme="dark"] .status.active {
+  background: #14532d;
+  color: #86efac;
+}
+
+[data-theme="dark"] .status.revoked {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+/* === API Key Visual === */
+.key-visual {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+[data-theme="dark"] .key-visual {
+  background: #3e3f40;
+  border-color: #5f6368;
+}
+
+.api-key-value {
+  font-size: 13px;
+  font-family: monospace;
+  color: #374151;
+  word-break: break-all;
+  flex: 1;
+}
+
+[data-theme="dark"] .api-key-value {
+  color: #e8eaed;
+}
+
+/* Right Side: Eye + Copy */
+.key-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key-actions-right .key-action-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-dark);
+  transition: background var(--transition);
+}
+
+.key-actions-right .key-action-btn:hover {
+  background: var(--hover-bg);
+}
+
+.key-actions-right .key-action-btn.copied {
+  color: #16a34a;
+}
+
+/* Right Side: Delete button */
+.key-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.key-actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--text-dark);
+  transition: background var(--transition);
+}
+
+.key-actions button:hover {
+  background: var(--hover-bg);
+}
+
+.key-actions button.copied {
+  color: #16a34a;
+}

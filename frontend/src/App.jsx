@@ -4,7 +4,8 @@ import DBGrid from './Components/Datagrid/DatabaseGrid'
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useState } from 'react';
 import ChatContainer from './Components/ChatInterface/ChatInterface';
-import './App.css'; // Import the new CSS
+import APIKeyManager from './Components/ApiKeyManager/ApiKeyManager';
+import './App.css'; 
 
 function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -17,6 +18,7 @@ function App() {
           <div className="app-content">
             {activeTab === "dashboard" && <DBGrid />}
             {activeTab === "chat" && <ChatContainer />}
+            {activeTab === "api" && <APIKeyManager />}
           </div>
           <Footer />
         </div>

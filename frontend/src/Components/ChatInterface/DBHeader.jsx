@@ -5,7 +5,7 @@ const Header = ({ databases, selectedDb, onSelectDb, chatName }) => {
   return (
     <div className="app-header">
       <h5 className="chat-title m-0">
-        {chatName || 'Chat'}
+        {chatName || 'Infera'}
       </h5>
       <Dropdown onSelect={onSelectDb}>
         <Dropdown.Toggle className="db-dropdown-toggle">

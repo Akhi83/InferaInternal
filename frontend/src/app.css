@@ -12,6 +12,7 @@
 .app-content {
   flex-grow: 1;
   overflow-y: auto;
+  background-color: var(--hover-bg);
 }
 
 /* Hide Scrollbar - Webkit (Chrome, Edge, Safari) */
@@ -29,3 +30,4 @@
 .app-content {
   -ms-overflow-style: none; 
 }
+

@@ -17,8 +17,10 @@ def create_app():
     from app.routes.databases import database_bp
     from app.routes.prompt_response import llm_bp
     from app.routes.handle_chats import chat_bp
+    from app.routes.api_keys import api_key_bp
     app.register_blueprint(database_bp)
     app.register_blueprint(llm_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(api_key_bp)
 
     return app

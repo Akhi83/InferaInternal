@@ -7,6 +7,18 @@ from jose.utils import base64url_decode
 CLERK_ISSUER = os.getenv("CLERK_ISSUER")
 CLERK_JWKS_URL = os.getenv("CLERK_JWKS_URL")
 
+def get_authorization_type():
+    auth = request.headers.get("Authorization", None)
+    api_key = request.headers.get("x-api-key", None)
+
+    if auth and auth.startswith("Bearer "):
+        return "token"
+    elif api_key:
+        return "key"
+    else:
+        return None
+
+
 def get_token_from_header():
     auth = request.headers.get("Authorization", None)
     if not auth or not auth.startswith("Bearer "):
