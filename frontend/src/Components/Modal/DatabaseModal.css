@@ -1,0 +1,145 @@
+/* Modal Base */
+.custom-modal .modal-dialog {
+  margin: 1.75rem auto;
+}
+
+.custom-modal .modal-content {
+  background: var(--hover-bg) !important;
+  color: var(--text-dark);
+  border-radius: 15px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transition: var(--transition);  
+}
+
+.custom-input::placeholder{
+  color: var(--text-dark);
+}
+
+/* Header */
+.custom-header {
+  background: var(--bg-light) !important;
+  color: var(--text-dark);
+  padding: 1.5rem 1.5rem 0;
+  border: none;
+  border-radius: 15px 15px 0 0;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+/* Title */
+.modal-title-text {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Body */
+.custom-body {
+  background: var(--hover-bg);
+  padding: 1.5rem;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Form Layout */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.custom-label {
+  color: var(--text-dark) !important;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Inputs */
+.custom-input {
+  background: var(--bg-light) !important;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  width: 100%;
+  color: var(--text-dark) !important;
+  transition: var(--transition);
+  outline: none;
+}
+
+.custom-input:active{
+  border: none;
+  outline: none;
+}
+
+/* Help Text */
+.help-text {
+  color: var(--text-dark) !important;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Buttons Container */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Cancel Button */
+.btn-cancel {
+  background: var(--bg-white) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-dark) !important;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-cancel:hover {
+  background: var(--hover-bg);
+}
+
+/* Connect / Save Button */
+.btn-connect {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(182, 10, 10, 0.4);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-connect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(182, 10, 10, 0.6);
+}
+
+/* Backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(5px);
+}
+
+/* Corner Fix */
+.custom-modal .modal-header:first-child {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.custom-modal .modal-body:last-child {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+/* Box-sizing fix */
+.modal-content-wrapper * {
+  box-sizing: border-box;
+}

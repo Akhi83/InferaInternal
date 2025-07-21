@@ -19,14 +19,16 @@
 }
 
 .footer a:hover {
-  background: var(--hover-bg);
   color: #000;
+  transform: scale(1.01);
 }
 
 [data-theme="dark"] .footer a:hover {
-  background: var(--hover-bg);
   color: #fff;
+  transform: scale(1.01);
 }
+
+
 
 .footer-separator {
   color: var(--text-dark);

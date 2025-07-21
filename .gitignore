@@ -5,8 +5,8 @@ Thumbs.db
 *.tmp
 
 # 
-__pycache__/
-.env
+**/__pycache__/
+**/.env
 
 # backend/
 backend/__pycache__/

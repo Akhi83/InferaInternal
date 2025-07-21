@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
 import { Copy, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
@@ -179,7 +179,7 @@ const APIKeyManager = () => {
               <div className="key-header">
                 <strong className="key-name">{key.key_name}</strong>
                 <span className={key.is_active ? 'status active' : 'status revoked'}>
-                  {key.is_active ? 'Active' : 'Revoked'}
+                  {key.is_active ? 'Active' : 'Expired'}
                 </span>
               </div>
 

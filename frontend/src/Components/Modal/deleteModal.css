@@ -1,0 +1,42 @@
+.delete-modal .modal-content {
+  background-color: var(--bg-white);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  transition: var(--transition);
+}
+
+.delete-modal .modal-header,
+.delete-modal .modal-footer {
+  border: none;
+}
+
+.delete-modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.delete-modal-body {
+  font-size: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.modal-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.cancel-btn {
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+}
+
+.delete-btn {
+  background: #d93025; /* Google-style red */
+  color: #fff;
+  border: none;
+}
+

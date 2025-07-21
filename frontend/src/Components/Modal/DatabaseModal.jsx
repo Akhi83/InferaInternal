@@ -2,10 +2,10 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
-import './Modal.css';
+import './DatabaseModal.css';
 import axios from 'axios';
 
-export default function AddDatabaseModal({ 
+export default function DatabaseModal({ 
   show, 
   onHide, 
   onDatabaseAdd, 

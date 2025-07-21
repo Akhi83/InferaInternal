@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import request, abort
 from app.models.apiModel import ApiKey
 from app.utils.key_utils import hash_api_key
+from app.routes.api_keys import is_key_valid
 from app import db
 
 def verify_api_key():
@@ -15,10 +16,11 @@ def verify_api_key():
     db_key = ApiKey.query.filter_by(key_hash=hashed_key, is_active=True).first()
     if not db_key:
         abort(401, "Invalid or Inactive API Key")
+        
 
     # Handle expiration
-    if not db_key.is_active:
-        abort(401, "API Key has expired")
+    if not is_key_valid(db_key):
+        abort(401, "API key is expired or inactive")
 
     # Usage tracking
     db_key.last_used_at = datetime.utcnow()

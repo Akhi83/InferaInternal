@@ -8,7 +8,7 @@ export default function Footer() {
             <a href="#docs">Documentation</a>
             <span className="footer-separator">|</span>
             <p className="footer-copy">
-                © 2021 <span className="footer-company">EmergeFlow Technologies</span>
+                © 2025 <a href="https://emergeflow.com/" className="footer-company">EmergeFlow Technologies</a>
             </p>
         </footer>
     );

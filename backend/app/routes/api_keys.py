@@ -100,7 +100,6 @@ def reset_api_key():
     # api_key.key_hash = hashed_key
     api_key.key_hash = raw_key
     api_key.last_used_at = None
-    api_key.usage_count = 0
     db.session.commit()
 
     return jsonify({
@@ -122,6 +121,7 @@ def list_api_keys():
 
     result = []
     for key in keys:
+        expired = key.expires_at and datetime.utcnow() > key.expires_at
         result.append({
             "key_id": str(key.key_id),
             "key_name": key.key_name,
@@ -130,7 +130,17 @@ def list_api_keys():
             "expires_at": key.expires_at.isoformat() if key.expires_at else None,
             "last_used_at": key.last_used_at.isoformat() if key.last_used_at else None,
             "usage_count": key.usage_count,
-            "is_active": key.is_active
+            "is_active": not expired
         })
 
     return jsonify({"keys": result})
+
+
+
+def is_key_valid(api_key_obj):
+    if not api_key_obj.is_active:
+        return False
+    if api_key_obj.expires_at and datetime.utcnow() > api_key_obj.expires_at:
+        return False
+    return True
+

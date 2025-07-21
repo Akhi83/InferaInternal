@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import { FiMenu, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import './SidePanel.css';
+import DeleteModal from '../Modal/deleteModal';
 
 const SidePanel = ({ chats, onSelectChat, onNewChat, onDeleteChat, activeChatId }) => {
   const [collapsed, setCollapsed] = useState(false);
-  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
+
+  const handleDeleteClick = (chat_id) => {
+    setChatToDelete(chat_id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    onDeleteChat(chatToDelete);
+    setShowDeleteModal(false);
+    setChatToDelete(null);
+  };
+
   if (collapsed) {
     return (
       <div className="side-panel collapsed">
@@ -46,7 +60,7 @@ const SidePanel = ({ chats, onSelectChat, onNewChat, onDeleteChat, activeChatId 
             </div>
             <button
               className="delete-icon"
-              onClick={() => onDeleteChat(chat.chat_id)}
+              onClick={() => handleDeleteClick(chat.chat_id)}
               title="Delete chat"
             >
               <FiTrash2 size={14} />
@@ -54,6 +68,17 @@ const SidePanel = ({ chats, onSelectChat, onNewChat, onDeleteChat, activeChatId 
           </div>
         ))}
       </div>
+
+      {/* Delete Chat Modal */}
+      <DeleteModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Chat"
+        bodyText="Are you sure you want to delete this chat? This cannot be undone."
+        confirmText="Delete Chat"
+      />
+
     </div>
   );
 };

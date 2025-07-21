@@ -24,3 +24,6 @@ clerk vulnerabilities fixed
 
 v10:
 ploty menu bar removed from the data visualization
+
+v11:
+Improved Code Modularity, Added Delete Modal for deleting database and chats, redesigned add and edit database modal according to the set theme, Active/Inactive indicators for api keys enabled at the frontend,handled api key expiration logic in the backend.
