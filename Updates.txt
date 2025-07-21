@@ -21,3 +21,6 @@ Added Api Key Support and Interface
 
 v9:
 clerk vulnerabilities fixed
+
+v10:
+ploty menu bar removed from the data visualization

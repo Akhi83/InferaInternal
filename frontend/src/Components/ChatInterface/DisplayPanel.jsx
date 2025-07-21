@@ -127,7 +127,7 @@ const DisplayPanel = ({ messages, onSend }) => {
                                   height: 400,
                                   margin: { t: 40, l: 50, r: 30, b: 50 },
                                 }}
-                                config={{ responsive: true }}
+                                config={{ responsive: true , displayModeBar: false }}
                                 style={{ width: '100%', height: '100%' }}
                               />
                               </div>
