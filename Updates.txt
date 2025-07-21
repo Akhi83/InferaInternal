@@ -18,3 +18,6 @@ Added Dark Mode + UI Further Enhanced
 
 v8:
 Added Api Key Support and Interface
+
+v9:
+clerk vulnerabilities fixed
