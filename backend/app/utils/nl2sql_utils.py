@@ -77,21 +77,44 @@ def execute_query(sql_query, engine):
 
 
 # Get OpenAI-generated SQL and metadata, or fallback to sample response
-def get_openai_response(question, schema_info, api_key=None):
+# In backend/app/utils/nl2sql_utils.py
+
+# 1. Update the function signature
+def get_openai_response(question, schema_info, history=[], api_key=None):
     api_key = api_key or os.getenv("OPENAI_API_KEY")
 
     if not api_key:
         return get_sample_llm_response(question), None
 
-    agent_prompt = f"""You are an expert in SQL and data analysis. Based on the database schema below, generate a SQL query to answer the user's question.
+    # 2. Format the history for the prompt
+    formatted_history = ""
+    if history:
+        for msg in history:
+            formatted_history += f"User: {msg['prompt']}\n"
+            # We parse the response if it's a JSON string to get the explanation
+            try:
+                response_json = json.loads(msg['response'])
+                explanation = response_json.get('explanation', '')
+                sql = response_json.get('query', '')
+                formatted_history += f"Assistant:\nExplanation: {explanation}\nSQL: {sql}\n\n"
+            except (json.JSONDecodeError, TypeError):
+                 formatted_history += f"Assistant: {msg['response']}\n\n"
+
+
+    # 3. Update the agent prompt
+    agent_prompt = f"""You are an expert in SQL and data analysis. Based on the database schema and conversation history below, generate a SQL query to answer the user's question.
 
 DATABASE SCHEMA:
 {json.dumps(schema_info, indent=2)}
+
+CONVERSATION HISTORY:
+{formatted_history}
 USER QUESTION: {question}
+
 Provide your response in the following JSON format:
 {{
-    "explanation": "Brief explanation of how you'll solve this",
-    "sql_query": "A single SQL query (do not return multiple statements). If needed, use JOINs or UNIONs.",
+    "explanation": "Brief explanation of how you'll solve this, considering the conversation history.",
+    "sql_query": "A single SQL query. If the user is asking for a modification of the previous query (e.g., 'show top 5'), modify the last SQL query from the history.",
     "visualization": "none/bar/line/pie/scatter",
     "visualization_explanation": "Why this visualization type is appropriate (or why none is needed)",
     "x_axis": "Column name for x-axis if visualization needed",
@@ -105,12 +128,21 @@ Be careful to use only tables and columns that exist in the schema. Use Correct 
 
     try:
         client = OpenAI(api_key=api_key)
+        
+        # 4. Construct the messages list for the API
+        messages_for_api = [
+            {"role": "system", "content": "You are a SQL and data visualization expert."}
+        ]
+        # Add history to the messages list
+        for msg in history:
+            messages_for_api.append({"role": "user", "content": msg['prompt']})
+            messages_for_api.append({"role": "assistant", "content": msg['response']})
+        # Add the new user question
+        messages_for_api.append({"role": "user", "content": agent_prompt})
+
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a SQL and data visualization expert."},
-                {"role": "user", "content": agent_prompt}
-            ],
+            messages=messages_for_api, # Use the new list
             temperature=0.001
         )
 
@@ -124,6 +156,53 @@ Be careful to use only tables and columns that exist in the schema. Use Correct 
 
     except Exception as e:
         return None, f"Error with OpenAI API: {str(e)}"
+# def get_openai_response(question, schema_info, api_key=None):
+#     api_key = api_key or os.getenv("OPENAI_API_KEY")
+
+#     if not api_key:
+#         return get_sample_llm_response(question), None
+
+#     agent_prompt = f"""You are an expert in SQL and data analysis. Based on the database schema below, generate a SQL query to answer the user's question.
+
+# DATABASE SCHEMA:
+# {json.dumps(schema_info, indent=2)}
+# USER QUESTION: {question}
+# Provide your response in the following JSON format:
+# {{
+#     "explanation": "Brief explanation of how you'll solve this",
+#     "sql_query": "A single SQL query (do not return multiple statements). If needed, use JOINs or UNIONs.",
+#     "visualization": "none/bar/line/pie/scatter",
+#     "visualization_explanation": "Why this visualization type is appropriate (or why none is needed)",
+#     "x_axis": "Column name for x-axis if visualization needed",
+#     "y_axis": "Column name for y-axis if visualization needed",
+#     "title": "Suggested title for the visualization",
+#     "color": "Column name for color differentiation if applicable (optional)"
+# }}
+# Only include a visualization if it would meaningfully enhance understanding of the data.
+# Be careful to use only tables and columns that exist in the schema. Use Correct Table and Column Names.
+# """
+
+#     try:
+#         client = OpenAI(api_key=api_key)
+#         response = client.chat.completions.create(
+#             model="gpt-4o-mini",
+#             messages=[
+#                 {"role": "system", "content": "You are a SQL and data visualization expert."},
+#                 {"role": "user", "content": agent_prompt}
+#             ],
+#             temperature=0.001
+#         )
+
+#         content = response.choices[0].message.content.strip()
+#         match = re.search(r'({[\s\S]*})', content)
+#         if not match:
+#             return None, "OpenAI did not return a valid JSON format."
+
+#         json_result = json.loads(match.group(1))
+#         return json_result, None
+
+#     except Exception as e:
+#         return None, f"Error with OpenAI API: {str(e)}"
 
 
 # Function to create visualization based on dataframe and visualization type
@@ -177,150 +256,3 @@ def create_visualization(df, viz_info):
     
     except Exception as e:
         return {"error": f"Error creating visualization: {str(e)}"}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def get_sample_llm_response(question):
-    samples = [
-        {
-            "explanation": "Fetching top 5 products by total sales from the `orders` table.",
-            "sql_query": "SELECT product_name, SUM(amount) AS total_sales FROM orders GROUP BY product_name ORDER BY total_sales DESC LIMIT 5;",
-            "visualization": "bar",
-            "visualization_explanation": "A bar chart clearly shows the top 5 products by sales.",
-            "x_axis": "product_name",
-            "y_axis": "total_sales",
-            "title": "Top 5 Products by Sales",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Summarizing monthly revenue using the `invoices` table.",
-            "sql_query": "SELECT strftime('%Y-%m', invoice_date) AS month, SUM(total) AS revenue FROM invoices GROUP BY month;",
-            "visualization": "line",
-            "visualization_explanation": "Line chart helps visualize revenue trends over time.",
-            "x_axis": "month",
-            "y_axis": "revenue",
-            "title": "Monthly Revenue Trend",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Calculating average session time per user.",
-            "sql_query": "SELECT user_id, AVG(session_duration) AS avg_duration FROM sessions GROUP BY user_id;",
-            "visualization": "scatter",
-            "visualization_explanation": "Scatter plot shows variation in user session durations.",
-            "x_axis": "user_id",
-            "y_axis": "avg_duration",
-            "title": "User Session Duration",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Showing order count by status from the `orders` table.",
-            "sql_query": "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status;",
-            "visualization": "pie",
-            "visualization_explanation": "Pie chart shows proportion of order statuses.",
-            "x_axis": "status",
-            "y_axis": "order_count",
-            "title": "Order Status Distribution",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Finding top 3 performing employees by number of sales.",
-            "sql_query": "SELECT employee_id, COUNT(*) AS num_sales FROM sales GROUP BY employee_id ORDER BY num_sales DESC LIMIT 3;",
-            "visualization": "bar",
-            "visualization_explanation": "Bar chart highlights top performers.",
-            "x_axis": "employee_id",
-            "y_axis": "num_sales",
-            "title": "Top Employees by Sales",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Daily traffic analysis from `web_logs` table.",
-            "sql_query": "SELECT DATE(access_time) AS day, COUNT(*) AS hits FROM web_logs GROUP BY day ORDER BY day;",
-            "visualization": "line",
-            "visualization_explanation": "Line chart illustrates daily traffic pattern.",
-            "x_axis": "day",
-            "y_axis": "hits",
-            "title": "Website Daily Traffic",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Visualizing expense breakdown by category.",
-            "sql_query": "SELECT category, SUM(amount) AS total_spent FROM expenses GROUP BY category;",
-            "visualization": "pie",
-            "visualization_explanation": "Pie chart shows how expenses are distributed.",
-            "x_axis": "category",
-            "y_axis": "total_spent",
-            "title": "Expense Breakdown",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Checking average rating per product.",
-            "sql_query": "SELECT product_id, AVG(rating) AS avg_rating FROM reviews GROUP BY product_id;",
-            "visualization": "bar",
-            "visualization_explanation": "Bar chart makes it easy to compare ratings.",
-            "x_axis": "product_id",
-            "y_axis": "avg_rating",
-            "title": "Product Ratings",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Show user count by signup month.",
-            "sql_query": "SELECT strftime('%Y-%m', signup_date) AS month, COUNT(*) AS user_count FROM users GROUP BY month;",
-            "visualization": "line",
-            "visualization_explanation": "Line chart shows user acquisition over time.",
-            "x_axis": "month",
-            "y_axis": "user_count",
-            "title": "Monthly User Signups",
-            "color": None,
-            "source": "sample"
-        },
-        {
-            "explanation": "Compare sales by region.",
-            "sql_query": "SELECT region, SUM(amount) AS sales FROM sales_data GROUP BY region;",
-            "visualization": "bar",
-            "visualization_explanation": "Bar chart compares total sales across regions.",
-            "x_axis": "region",
-            "y_axis": "sales",
-            "title": "Regional Sales Comparison",
-            "color": None,
-            "source": "sample"
-        },
-    ]
-
-    return random.choice(samples)

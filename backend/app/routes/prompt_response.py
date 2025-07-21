@@ -29,6 +29,7 @@ def handle_llm_query():
         data = request.get_json()
         prompt = data.get("prompt")
         database_id = data.get("database_id")
+        history = data.get("history", []) # Get history from request, default to empty list
     elif auth == "key":
         db_key = verify_api_key()
         data = request.get_json()
@@ -67,7 +68,7 @@ def handle_llm_query():
     except Exception as e:
         return jsonify({"error": f"Failed to load or fetch schema: {str(e)}"}), 500
 
-    llm_response, error = get_openai_response(prompt, schema, api_key=os.getenv("OPENAI_API_KEY"))
+    llm_response, error = get_openai_response(prompt, schema, history, api_key=os.getenv("OPENAI_API_KEY"))
     if error:
         return jsonify({"message": {
             "prompt": prompt,

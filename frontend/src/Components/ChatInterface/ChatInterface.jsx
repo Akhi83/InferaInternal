@@ -90,45 +90,50 @@ const ChatContainer = () => {
     setActiveChatId(chatId);
   };
 
-const handleSend = async (prompt) => {
-  if (!selectedDb || !activeChatId || !prompt.trim()) return;
-  const token = await getToken();
+  const handleSend = async (prompt) => {
+    if (!selectedDb || !activeChatId || !prompt.trim()) return;
+    const token = await getToken();
 
-  // Optimistically show placeholder response
-  const tempMessage = {
-    prompt,
-    response: "Thinking..."
-  };
-  setMessages(prev => [...prev, tempMessage]);
-
-  try {
-    const res = await axios.post('/api/query', {
+    // Optimistically show placeholder response
+    const tempMessage = {
       prompt,
-      database_id: selectedDb.database_id,
-      chat_id: activeChatId
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const { message } = res.data;
-
-    // Replace the last optimistic message with the real response
-    setMessages(prev => [
-      ...prev.slice(0, -1),
-      message
-    ]);
-
-  } catch (err) {
-    const errorMsg = {
-      prompt,
-      response: `Error: ${err.response?.data?.error || 'Unexpected error'}`
+      response: "Thinking..."
     };
-    setMessages(prev => [
-      ...prev.slice(0, -1),
-      errorMsg
-    ]);
-  }
-};
+    setMessages(prev => [...prev, tempMessage]);
+    const history = messages.slice(-4).map(msg => ({
+      prompt: msg.prompt,
+      response: msg.response
+    }));
+
+    try {
+      const res = await axios.post('/api/query', {
+        prompt,
+        database_id: selectedDb.database_id,
+        chat_id: activeChatId,
+        history : history
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const { message } = res.data;
+
+      // Replace the last optimistic message with the real response
+      setMessages(prev => [
+        ...prev.slice(0, -1),
+        message
+      ]);
+
+    } catch (err) {
+      const errorMsg = {
+        prompt,
+        response: `Error: ${err.response?.data?.error || 'Unexpected error'}`
+      };
+      setMessages(prev => [
+        ...prev.slice(0, -1),
+        errorMsg
+      ]);
+    }
+  };
 
 
   const handleDbSelect = (id) => {
@@ -159,7 +164,7 @@ const handleSend = async (prompt) => {
           </div>
 
           <div className="flex-grow-1 overflow-auto chat-scroll-area">
-            <DisplayPanel messages={messages} onSend={handleSend}/>
+            <DisplayPanel messages={messages} onSend={handleSend} />
           </div>
         </Col>
       </Row>
