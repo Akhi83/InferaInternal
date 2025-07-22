@@ -111,27 +111,35 @@ const ChatContainer = () => {
     if (!selectedDb || !activeChatId || !prompt.trim()) return;
     const token = await getToken();
 
+    // Optimistically show placeholder response
     const tempMessage = {
       prompt,
       response: "Thinking..."
     };
     setMessages(prev => [...prev, tempMessage]);
+    const history = messages.slice(-4).map(msg => ({
+      prompt: msg.prompt,
+      response: msg.response
+    }));
 
     try {
       const res = await axios.post('/api/query', {
         prompt,
         database_id: selectedDb.database_id,
-        chat_id: activeChatId
+        chat_id: activeChatId,
+        history : history
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const { message } = res.data;
 
+      // Replace the last optimistic message with the real response
       setMessages(prev => [
         ...prev.slice(0, -1),
         message
       ]);
+
     } catch (err) {
       const errorMsg = {
         prompt,
@@ -143,6 +151,7 @@ const ChatContainer = () => {
       ]);
     }
   };
+
 
   const handleDbSelect = (id) => {
     const db = databases.find((d) => d.database_id === id);
