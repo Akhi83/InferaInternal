@@ -135,7 +135,7 @@ export default function DatabaseModal({
                 name="database_name"
                 value={formData.database_name}
                 onChange={handleChange}
-                placeholder="My Database"
+                placeholder="Enter Your Database Name"
                 required
                 className="custom-input"
               />
@@ -143,8 +143,8 @@ export default function DatabaseModal({
           </div>
 
           <div className="button-container">
-            <Button variant="secondary" onClick={onHide} className="btn-cancel">Cancel</Button>
-            <Button onClick={handleSubmit} className="btn-cancel">
+            <Button variant="secondary" onClick={onHide} className="btn-cancel modal-btn">Cancel</Button>
+            <Button onClick={handleSubmit} className="btn-connect modal-btn">
               {mode === "edit" ? "Save Changes" : "Connect Database"}
             </Button>
           </div>

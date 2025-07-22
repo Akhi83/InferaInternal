@@ -71,6 +71,10 @@
   outline: none;
 }
 
+.custom-input::placeholder{
+  color: var(--bg-inverted) !important;
+}
+
 .custom-input:active{
   border: none;
   outline: none;
@@ -93,9 +97,9 @@
 
 /* Cancel Button */
 .btn-cancel {
-  background: var(--bg-white) !important;
-  border: 1px solid var(--border-light) !important;
-  color: var(--text-dark) !important;
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 12px 24px;
   font-weight: 500;
@@ -113,14 +117,12 @@
   border-radius: 8px;
   padding: 12px 24px;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(182, 10, 10, 0.4);
   transition: var(--transition);
   cursor: pointer;
 }
 
 .btn-connect:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(182, 10, 10, 0.6);
 }
 
 /* Backdrop */

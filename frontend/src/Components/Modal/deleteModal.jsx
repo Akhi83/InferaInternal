@@ -1,6 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import './deleteModal.css';
+import './Modals.css'; 
 
 export default function DeleteModal({
   show,
@@ -11,18 +11,18 @@ export default function DeleteModal({
   confirmText = "Delete"
 }) {
   return (
-    <Modal show={show} onHide={onHide} centered className="delete-modal">
+    <Modal show={show} onHide={onHide} centered className="custom-modal">
       <Modal.Header>
-        <Modal.Title className="delete-modal-title">{title}</Modal.Title>
+        <Modal.Title className="custom-modal-title">{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="delete-modal-body">
+      <Modal.Body className="custom-modal-body">
         {bodyText}
       </Modal.Body>
-      <Modal.Footer className="delete-modal-footer">
+      <Modal.Footer className="custom-modal-footer">
         <Button variant="secondary" onClick={onHide} className="modal-btn cancel-btn">
           Cancel
         </Button>
-        <Button variant="danger" onClick={onConfirm} className="modal-btn delete-btn">
+        <Button variant="danger" onClick={onConfirm} className="modal-btn danger-btn">
           {confirmText}
         </Button>
       </Modal.Footer>

@@ -137,6 +137,10 @@
   font-size: 14px;
 }
 
+.create-form-input::placeholder {
+  color: var(--bg-inverted) !important;
+}
+
 
 /* === API Key Row === */
 .api-key-row {
@@ -285,4 +289,14 @@
 
 .key-actions button.copied {
   color: #16a34a;
+}
+
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
 }

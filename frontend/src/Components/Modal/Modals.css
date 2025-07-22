@@ -1,4 +1,8 @@
-.delete-modal .modal-content {
+*:focus {
+  outline: none !important;
+}
+
+.custom-modal .modal-content {
   background-color: var(--bg-white);
   color: var(--text-dark);
   border: 1px solid var(--border-light);
@@ -6,17 +10,28 @@
   transition: var(--transition);
 }
 
-.delete-modal .modal-header,
-.delete-modal .modal-footer {
+.custom-modal .modal-header,
+.custom-modal .modal-footer {
   border: none;
 }
 
-.delete-modal-title {
+.custom-modal-input  {
+  color: var(--text-dark) !important;
+  background-color: var(--border-light) !important;
+}
+
+
+.custom-modal-input::placeholder {
+  color: var(--text-dark) !important;
+
+}
+
+.custom-modal-title {
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-.delete-modal-body {
+.custom-modal-body {
   font-size: 1rem;
   padding: 1rem 1.5rem;
 }
@@ -34,7 +49,17 @@
   border: 1px solid var(--border-light);
 }
 
-.delete-btn {
+.primary-btn {
+  background: var(--primary-color, #4a90e2); /* Default primary blue */
+  color: #fff;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: #0284B8;
+}
+
+.danger-btn {
   background: #d93025; /* Google-style red */
   color: #fff;
   border: none;

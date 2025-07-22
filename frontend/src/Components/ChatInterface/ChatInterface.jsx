@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useAuth } from '@clerk/clerk-react';
 import SidePanel from './SidePanel';
 import DisplayPanel from './DisplayPanel';
 import Header from './DBHeader';
+import CreateChatModal from '../Modal/AddChatModal';
 
 const ChatContainer = () => {
   const [chats, setChats] = useState([]);
@@ -12,25 +13,30 @@ const ChatContainer = () => {
   const [messages, setMessages] = useState([]);
   const [databases, setDatabases] = useState([]);
   const [selectedDb, setSelectedDb] = useState(null);
-  const { getToken, isLoaded } = useAuth();
+  const [sidePanelOpen, setSidePanelOpen] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newChatTitle, setNewChatTitle] = useState('');
 
-  // Initial load: chats + databases
+  const { getToken, isLoaded } = useAuth();
+  const messagesEndRef = useRef(null);
+
   useEffect(() => {
     if (!isLoaded) return;
 
     const fetchInitialData = async () => {
       const token = await getToken();
-
-      // Fetch chats
       const chatRes = await axios.get('/api/chats', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setChats(chatRes.data);
-      if (chatRes.data.length > 0) {
-        setActiveChatId(chatRes.data[0].chat_id);
-      }
 
-      // Fetch databases
+      const chatsData = chatRes.data;
+      setChats(chatsData);
+
+      if (chatsData.length > 0) {
+        setActiveChatId(chatsData[0].chat_id);
+      }      
+      setSidePanelOpen(true);
+
       const dbRes = await axios.get('/api/databases', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -42,7 +48,6 @@ const ChatContainer = () => {
     fetchInitialData().catch(console.error);
   }, [isLoaded]);
 
-  // Load messages when active chat changes
   useEffect(() => {
     if (!activeChatId) return;
 
@@ -57,9 +62,14 @@ const ChatContainer = () => {
     fetchMessages().catch(console.error);
   }, [activeChatId, getToken]);
 
-  const handleNewChat = async () => {
-    const title = prompt('Enter a name for your new chat:');
-    if (!title) return;
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const handleCreateChat = async (title) => {
+    if (!title.trim()) return;
 
     const token = await getToken();
     const res = await axios.post('/api/chats', { title }, {
@@ -69,6 +79,9 @@ const ChatContainer = () => {
     const newChat = res.data;
     setChats([newChat, ...chats]);
     setActiveChatId(newChat.chat_id);
+    setSidePanelOpen(true);
+    setShowCreateModal(false);
+    setNewChatTitle('');
   };
 
   const handleDeleteChat = async (chatId) => {
@@ -84,70 +97,78 @@ const ChatContainer = () => {
       setActiveChatId(updatedChats[0]?.chat_id || null);
       setMessages([]);
     }
+
+    if (updatedChats.length === 0) {
+      setSidePanelOpen(false);
+    }
   };
 
   const handleSelectChat = (chatId) => {
     setActiveChatId(chatId);
   };
 
-const handleSend = async (prompt) => {
-  if (!selectedDb || !activeChatId || !prompt.trim()) return;
-  const token = await getToken();
+  const handleSend = async (prompt) => {
+    if (!selectedDb || !activeChatId || !prompt.trim()) return;
+    const token = await getToken();
 
-  // Optimistically show placeholder response
-  const tempMessage = {
-    prompt,
-    response: "Thinking..."
-  };
-  setMessages(prev => [...prev, tempMessage]);
-
-  try {
-    const res = await axios.post('/api/query', {
+    const tempMessage = {
       prompt,
-      database_id: selectedDb.database_id,
-      chat_id: activeChatId
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const { message } = res.data;
-
-    // Replace the last optimistic message with the real response
-    setMessages(prev => [
-      ...prev.slice(0, -1),
-      message
-    ]);
-
-  } catch (err) {
-    const errorMsg = {
-      prompt,
-      response: `Error: ${err.response?.data?.error || 'Unexpected error'}`
+      response: "Thinking..."
     };
-    setMessages(prev => [
-      ...prev.slice(0, -1),
-      errorMsg
-    ]);
-  }
-};
+    setMessages(prev => [...prev, tempMessage]);
 
+    try {
+      const res = await axios.post('/api/query', {
+        prompt,
+        database_id: selectedDb.database_id,
+        chat_id: activeChatId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const { message } = res.data;
+
+      setMessages(prev => [
+        ...prev.slice(0, -1),
+        message
+      ]);
+    } catch (err) {
+      const errorMsg = {
+        prompt,
+        response: `Error: ${err.response?.data?.error || 'Unexpected error'}`
+      };
+      setMessages(prev => [
+        ...prev.slice(0, -1),
+        errorMsg
+      ]);
+    }
+  };
 
   const handleDbSelect = (id) => {
     const db = databases.find((d) => d.database_id === id);
     setSelectedDb(db);
   };
 
+  const handleEmptyClick = () => {
+    if (chats.length === 0) {
+      setShowCreateModal(true);
+    }
+  };
+
   return (
     <Container fluid className="h-100 p-0 overflow-hidden">
       <Row className="h-100 g-0 flex-nowrap">
-        <Col xs="auto" className="p-0 sidebar-col">
-          <SidePanel
-            chats={chats}
-            onSelectChat={handleSelectChat}
-            onNewChat={handleNewChat}
-            activeChatId={activeChatId}
-            onDeleteChat={handleDeleteChat}
-          />
-        </Col>
+        {sidePanelOpen && (
+          <Col xs="auto" className="p-0 sidebar-col">
+            <SidePanel
+              chats={chats}
+              onSelectChat={handleSelectChat}
+              onNewChat={() => setShowCreateModal(true)}
+              activeChatId={activeChatId}
+              onDeleteChat={handleDeleteChat}
+            />
+          </Col>
+        )}
 
         <Col className="d-flex flex-column p-0 h-100 overflow-hidden">
           <div className="shrink-0">
@@ -159,10 +180,24 @@ const handleSend = async (prompt) => {
           </div>
 
           <div className="flex-grow-1 overflow-auto chat-scroll-area">
-            <DisplayPanel messages={messages} onSend={handleSend}/>
+            <DisplayPanel
+              messages={messages}
+              onSend={handleSend}
+              onEmptyClick={handleEmptyClick}
+              showInput={!!activeChatId}
+              messagesEndRef={messagesEndRef}
+            />
           </div>
         </Col>
       </Row>
+
+      <CreateChatModal
+        show={showCreateModal}
+        onHide={() => setShowCreateModal(false)}
+        onCreate={handleCreateChat}
+        chatTitle={newChatTitle}
+        setChatTitle={setNewChatTitle}
+      />
     </Container>
   );
 };

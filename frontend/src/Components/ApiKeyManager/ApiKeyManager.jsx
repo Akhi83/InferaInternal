@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
 import { Copy, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
 import './APIKeyManager.css';
+import DeleteModal from '../Modal/deleteModal';
 
 const APIKeyManager = () => {
   const { getToken } = useAuth();
@@ -17,6 +18,9 @@ const APIKeyManager = () => {
   });
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState(null);
 
   const fetchApiKeys = async () => {
     try {
@@ -68,15 +72,23 @@ const APIKeyManager = () => {
     }
   };
 
-  const deleteApiKey = async (key_id) => {
+  const handleDeleteClick = (key_id) => {
+    setKeyToDelete(key_id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
     try {
       const token = await getToken();
-      await axios.post('/api/delete_api_key', { key_id }, {
+      await axios.post('/api/delete_api_key', { key_id: keyToDelete }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setApiKeys(apiKeys.filter(k => k.key_id !== key_id));
+      setApiKeys(apiKeys.filter(k => k.key_id !== keyToDelete));
     } catch (err) {
       console.error('Error deleting API key:', err);
+    } finally {
+      setShowDeleteModal(false);
+      setKeyToDelete(null);
     }
   };
 
@@ -104,12 +116,17 @@ const APIKeyManager = () => {
             <p>Manage your API keys and usage.</p>
           </div>
         </div>
-        <button className="create-btn" onClick={() => { 
-          setShowCreateForm(true); 
-          setError('');
-        }}>
-          <Plus size={16} /> Create New Key
-        </button>
+        {!showCreateForm && (
+          <button 
+            className="create-btn"
+            onClick={() => { 
+              setShowCreateForm(true); 
+              setError('');
+            }}
+          >
+            <Plus size={16} /> Create New Key
+          </button>
+        )}
       </div>
 
       <div className="api-stats">
@@ -138,6 +155,7 @@ const APIKeyManager = () => {
             placeholder="Key Name"
             value={newKeyForm.name}
             onChange={(e) => setNewKeyForm({ ...newKeyForm, name: e.target.value })}
+            className="create-form-input"
           />
           <h4>Expiry Duration</h4>
           <select
@@ -151,14 +169,14 @@ const APIKeyManager = () => {
           </select>
           <div className="form-actions">
             <button
-              className="create-btn"
+              className="modal-btn primary-btn"
               onClick={createApiKey}
               disabled={creating}
             >
               {creating ? 'Creating...' : 'Create'}
             </button>
             <button
-              className="cancel-btn"
+              className="modal-btn cancel-btn"
               onClick={() => {
                 setShowCreateForm(false);
                 setNewKeyForm({ name: '', expiresIn: '30' });
@@ -216,13 +234,22 @@ const APIKeyManager = () => {
             </div>
 
             <div className="key-actions">
-              <button onClick={() => deleteApiKey(key.key_id)} title="Delete API Key">
+              <button onClick={() => handleDeleteClick(key.key_id)} title="Delete API Key">
                 <Trash2 size={16} />
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      <DeleteModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete API Key"
+        bodyText="Are you sure you want to delete this API key? This action cannot be undone."
+        confirmText="Delete API Key"
+      />
     </div>
   );
 };

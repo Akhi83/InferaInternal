@@ -65,7 +65,7 @@ function DBGrid() {
 
   useEffect(() => {
     fetchDatabases();
-  });
+  }, []);
 
   const handleAddDatabase = () => {
     setEditData(null);

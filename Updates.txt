@@ -27,3 +27,8 @@ ploty menu bar removed from the data visualization
 
 v11:
 Improved Code Modularity, Added Delete Modal for deleting database and chats, redesigned add and edit database modal according to the set theme, Active/Inactive indicators for api keys enabled at the frontend,handled api key expiration logic in the backend.
+
+v15: 
+Added Modal for New chat creation, Disabled create new key button in header when creation form is open, 
+Improved UI for Empty Chat by disabling side panel and input box, Added Theme to Modals,
+Enabled Auto Scrolling to latest chat when chat is active. Handled infinite get database api call bug
