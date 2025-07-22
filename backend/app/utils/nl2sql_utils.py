@@ -81,10 +81,6 @@ def execute_query(sql_query, engine):
 
 # 1. Update the function signature
 def get_openai_response(question, schema_info, history=[], api_key=None):
-    api_key = api_key or os.getenv("OPENAI_API_KEY")
-
-    if not api_key:
-        return get_sample_llm_response(question), None
 
     # 2. Format the history for the prompt
     formatted_history = ""
@@ -130,6 +126,7 @@ Be careful to use only tables and columns that exist in the schema. Use Correct 
 """
 
     try:
+        api_key = api_key or os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=api_key)
         
         # 4. Construct the messages list for the API
@@ -159,56 +156,9 @@ Be careful to use only tables and columns that exist in the schema. Use Correct 
 
     except Exception as e:
         return None, f"Error with OpenAI API: {str(e)}"
-# def get_openai_response(question, schema_info, api_key=None):
-#     api_key = api_key or os.getenv("OPENAI_API_KEY")
-
-#     if not api_key:
-#         return get_sample_llm_response(question), None
-
-#     agent_prompt = f"""You are an expert in SQL and data analysis. Based on the database schema below, generate a SQL query to answer the user's question.
-
-# DATABASE SCHEMA:
-# {json.dumps(schema_info, indent=2)}
-# USER QUESTION: {question}
-# Provide your response in the following JSON format:
-# {{
-#     "explanation": "Brief explanation of how you'll solve this",
-#     "sql_query": "A single SQL query (do not return multiple statements). If needed, use JOINs or UNIONs.",
-#     "visualization": "none/bar/line/pie/scatter",
-#     "visualization_explanation": "Why this visualization type is appropriate (or why none is needed)",
-#     "x_axis": "Column name for x-axis if visualization needed",
-#     "y_axis": "Column name for y-axis if visualization needed",
-#     "title": "Suggested title for the visualization",
-#     "color": "Column name for color differentiation if applicable (optional)"
-# }}
-# Only include a visualization if it would meaningfully enhance understanding of the data.
-# Be careful to use only tables and columns that exist in the schema. Use Correct Table and Column Names.
-# """
-
-#     try:
-#         client = OpenAI(api_key=api_key)
-#         response = client.chat.completions.create(
-#             model="gpt-4o-mini",
-#             messages=[
-#                 {"role": "system", "content": "You are a SQL and data visualization expert."},
-#                 {"role": "user", "content": agent_prompt}
-#             ],
-#             temperature=0.001
-#         )
-
-#         content = response.choices[0].message.content.strip()
-#         match = re.search(r'({[\s\S]*})', content)
-#         if not match:
-#             return None, "OpenAI did not return a valid JSON format."
-
-#         json_result = json.loads(match.group(1))
-#         return json_result, None
-
-#     except Exception as e:
-#         return None, f"Error with OpenAI API: {str(e)}"
+    
 
 
-# Function to create visualization based on dataframe and visualization type
 def create_visualization(df, viz_info):
     viz_type = viz_info.get("visualization", "none")
     

@@ -143,7 +143,7 @@ const ChatContainer = () => {
     } catch (err) {
       const errorMsg = {
         prompt,
-        response: `Error: ${err.response?.data?.error || 'Unexpected error'}`
+        response: `Error: ${err.response?.data?.error || err.error || 'Unexpected error'}`
       };
       setMessages(prev => [
         ...prev.slice(0, -1),

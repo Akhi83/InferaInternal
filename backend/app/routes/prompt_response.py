@@ -52,12 +52,19 @@ def handle_llm_query():
 
     db_obj = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
     if not db_obj:
-        return jsonify({"error": "Database not found"}), 404
+                return jsonify({"message": {
+            "prompt": prompt,
+            "response": f"Failed to locate database."
+        }}), 404
 
     try:
         engine = create_engine(db_obj.database_string)
     except Exception as e:
-        return jsonify({"error": f"Failed to connect to database: {str(e)}"}), 500
+        print(str(e))
+        return jsonify({"message": {
+            "prompt": prompt,
+            "response": f"Failed to connect to the database"
+        }}), 500
 
     try:
         if db_obj.database_schema_json and db_obj.database_schema_json != "{}":
@@ -67,38 +74,40 @@ def handle_llm_query():
             db_obj.database_schema_json = json.dumps(schema)
             db.session.commit()
     except Exception as e:
-        return jsonify({"error": f"Failed to load or fetch schema: {str(e)}"}), 500
+            print(str(e))
+            return jsonify({"message": {
+                "prompt": prompt,
+                "response": f"Failed to load or fetch database schema."
+            }
+        }), 500
 
     llm_response, error = get_openai_response(prompt, schema, history, api_key=os.getenv("OPENAI_API_KEY"))
     if error:
+        print(error)
         return jsonify({"message": {
             "prompt": prompt,
-            "response": f"LLM Error: {error}"
+            "response": f"LLM failed to generate a response."
         }}), 200
         # === NEW SECURITY CHECK ===
     generated_sql = llm_response.get("sql_query", "")
     if not is_query_safe(generated_sql) or not generated_sql:
         return jsonify({"message": {
             "prompt": prompt,
-            "response": json.dumps({
-                "query": "",
-                "explanation": "Your question is too broad or potentially unsafe. Please ask a more specific question about the data.",
-                "results": [],
-                "visualization": {"type": "none"}
-            })
+            "response": f"Please provide a valid prompt."
         }}), 200
-    # === END OF SECURITY CHECK ===
+
+
     df, err = execute_query(generated_sql, engine)
     if err:
+        print(err)
         return jsonify({"message": {
             "prompt": prompt,
-            "response": f"SQL Error: {err}"
+            "response": f"Failed to generate a valid Query. Please refine your prompt."
         }}), 200
     
     visualization = create_visualization(df, llm_response)
     visualization_json = None
-    # Check if visualization is NOT a dictionary OR if it is a dictionary but doesn't have an 'error' key.
-    # In other words, check if it's a valid Plotly figure object.
+
     if visualization and not (isinstance(visualization, dict) and 'error' in visualization):
         visualization_json = visualization.to_json()
 
