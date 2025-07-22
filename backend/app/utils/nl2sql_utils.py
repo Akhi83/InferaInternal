@@ -125,7 +125,9 @@ Provide your response in the following JSON format:
     "title": "Suggested title for the visualization",
     "color": "Column name for color differentiation if applicable (optional)"
 }}
-Only include a visualization if it would meaningfully enhance understanding of the data.
+Include a visualization whenever it is possible to create a meaningful plot from the data.
+Don't include a visualization if the result is a single value or a single row. 
+But if it's not a single value or row, always include a visualization.
 Be careful to use only tables and columns that exist in the schema. Use Correct Table and Column Names.
 """
 
