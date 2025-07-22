@@ -42,5 +42,8 @@ Added Modal for New chat creation, Disabled create new key button in header when
 Improved UI for Empty Chat by disabling side panel and input box, Added Theme to Modals,
 Enabled Auto Scrolling to latest chat when chat is active. Handled infinite get database api call bug
 
+v16:
+Added logic to include visualizations more often and if necessary.
+
 v17:
 Graceful Error Handling
