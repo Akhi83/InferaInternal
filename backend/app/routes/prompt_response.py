@@ -96,7 +96,12 @@ def handle_llm_query():
         }}), 200
     
     visualization = create_visualization(df, llm_response)
-    visualization_json = visualization.to_json() if visualization else None
+    visualization_json = None
+    # Check if visualization is NOT a dictionary OR if it is a dictionary but doesn't have an 'error' key.
+    # In other words, check if it's a valid Plotly figure object.
+    if visualization and not (isinstance(visualization, dict) and 'error' in visualization):
+        visualization_json = visualization.to_json()
+
 
     response_dict = {
     "query": llm_response["sql_query"],

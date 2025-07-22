@@ -33,3 +33,6 @@ Enable chatbot to remember recent messages(contextual awareness).
 
 v13:
 Jailbreak queries prevented
+
+v14:
+Handled exception for visualization
