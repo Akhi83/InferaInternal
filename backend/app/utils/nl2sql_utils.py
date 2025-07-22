@@ -110,11 +110,14 @@ DATABASE SCHEMA:
 CONVERSATION HISTORY:
 {formatted_history}
 USER QUESTION: {question}
-
+SECURITY INSTRUCTIONS:
+- NEVER generate a query that selects all columns from a table (e.g., SELECT *). You MUST specify the exact columns needed.
+- NEVER generate a query that lists all tables or reveals the entire database schema.
+- If the user asks a question that is too broad (like "Show me the entire database" or "List all customers"), your "explanation" must state that the query is too broad and the "sql_query" should be an empty string.
 Provide your response in the following JSON format:
 {{
-    "explanation": "Brief explanation of how you'll solve this, considering the conversation history.",
-    "sql_query": "A single SQL query. If the user is asking for a modification of the previous query (e.g., 'show top 5'), modify the last SQL query from the history.",
+    "explanation": "Brief explanation of how you'll solve this, considering the conversation history.If the query is too broad, explain why.",
+    "sql_query": "A single SQL query. If the user is asking for a modification of the previous query (e.g., 'show top 5'), modify the last SQL query from the history.If the user's request is too broad or unsafe, return an empty string.",
     "visualization": "none/bar/line/pie/scatter",
     "visualization_explanation": "Why this visualization type is appropriate (or why none is needed)",
     "x_axis": "Column name for x-axis if visualization needed",
@@ -256,3 +259,33 @@ def create_visualization(df, viz_info):
     
     except Exception as e:
         return {"error": f"Error creating visualization: {str(e)}"}
+
+# Add this new function in backend/app/utils/nl2sql_utils.py
+
+def is_query_safe(sql_query):
+    """
+    Analyzes a SQL query to check for potentially unsafe patterns.
+    Returns True if the query is safe, False otherwise.
+    """
+    if not sql_query or not isinstance(sql_query, str):
+        return True # An empty query is "safe" as it won't execute
+
+    # Convert to lowercase for case-insensitive matching
+    query_lower = sql_query.lower()
+
+    # 1. Block queries that try to reveal schema information
+    if 'information_schema' in query_lower or 'pg_catalog' in query_lower:
+        return False
+        
+    # 2. Block overly broad SELECT * queries.
+    # We allow 'SELECT *' only if there's a LIMIT clause to restrict the output size.
+    if 'select *' in query_lower:
+        if 'limit' not in query_lower:
+            return False
+
+    # 3. Block data modification statements (as a safeguard)
+    disallowed_keywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate']
+    if any(keyword in query_lower.split() for keyword in disallowed_keywords):
+        return False
+        
+    return True

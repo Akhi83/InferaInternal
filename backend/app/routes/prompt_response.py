@@ -11,6 +11,7 @@ from app.models.database_connection import DatabaseConnection
 from app.models.apiModel import ApiKey
 from app.utils.clerk_auth import verify_clerk_token, get_authorization_type
 from app.utils.nl2sql_utils import get_openai_response, execute_query, get_db_schema , create_visualization
+from app.utils.nl2sql_utils import get_openai_response, execute_query, get_db_schema, create_visualization, is_query_safe
 
 llm_bp = Blueprint("llm", __name__)
 def convert_dates(obj):
@@ -74,8 +75,20 @@ def handle_llm_query():
             "prompt": prompt,
             "response": f"LLM Error: {error}"
         }}), 200
-
-    df, err = execute_query(llm_response["sql_query"], engine)
+        # === NEW SECURITY CHECK ===
+    generated_sql = llm_response.get("sql_query", "")
+    if not is_query_safe(generated_sql) or not generated_sql:
+        return jsonify({"message": {
+            "prompt": prompt,
+            "response": json.dumps({
+                "query": "",
+                "explanation": "Your question is too broad or potentially unsafe. Please ask a more specific question about the data.",
+                "results": [],
+                "visualization": {"type": "none"}
+            })
+        }}), 200
+    # === END OF SECURITY CHECK ===
+    df, err = execute_query(generated_sql, engine)
     if err:
         return jsonify({"message": {
             "prompt": prompt,
