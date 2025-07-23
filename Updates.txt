@@ -29,7 +29,7 @@ v11:
 Improved Code Modularity, Added Delete Modal for deleting database and chats, redesigned add and edit database modal according to the set theme, Active/Inactive indicators for api keys enabled at the frontend,handled api key expiration logic in the backend.
 
 v12:
-Enable chatbot to remember recent messages(contextual awareness). 
+Enable chatbot to remember recent messages(contextual awareness),not for API Keys. 
 
 v13:
 Jailbreak queries prevented
@@ -47,6 +47,9 @@ Added logic to include visualizations more often and if necessary.
 
 v17:
 Graceful Error Handling
+
+v18:
+Enable chatbot to remember recent messages(contextual awareness) when accessed through api key too.
 
 v19: 
 Add API Call Rate Limit using flask-limiter, Refactored Error Responses From Backend.

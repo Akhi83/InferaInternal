@@ -66,7 +66,8 @@ def handle_llm_query():
             if not db_obj:
                 return return_error(prompt, "Database not found", 404)
 
-            database_id = db_obj.database_id
+            database_id = db_obj.database_id  # optional, only if you still need the id
+            history = data.get("history", [])
 
         else:
             return jsonify({"error": "Invalid Authentication Header"}), 400
