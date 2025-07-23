@@ -47,3 +47,6 @@ Added logic to include visualizations more often and if necessary.
 
 v17:
 Graceful Error Handling
+
+v19: 
+Add API Call Rate Limit using flask-limiter, Refactored Error Responses From Backend.

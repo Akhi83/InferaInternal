@@ -11,8 +11,6 @@ import json
 
 
 database_bp = Blueprint('databases', __name__)
-
-
 @database_bp.route("/api/databases", methods=["GET"])
 def get_user_databases():
     user = verify_clerk_token()

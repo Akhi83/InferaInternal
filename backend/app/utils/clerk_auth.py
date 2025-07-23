@@ -3,6 +3,23 @@ import requests
 from flask import request, abort
 from jose import jwt, jwk
 from jose.utils import base64url_decode
+import time
+import requests
+
+# --- JWKS Cache ---
+_jwks_cache = None
+_jwks_expiry = 0
+
+def get_cached_jwks(ttl=300):  # TTL = 5 minutes
+    global _jwks_cache, _jwks_expiry
+    now = time.time()
+    if _jwks_cache is None or now > _jwks_expiry:
+        res = requests.get(CLERK_JWKS_URL, timeout=2)
+        res.raise_for_status()
+        _jwks_cache = res.json()
+        _jwks_expiry = now + ttl
+    return _jwks_cache
+
 
 CLERK_ISSUER = os.getenv("CLERK_ISSUER")
 CLERK_JWKS_URL = os.getenv("CLERK_JWKS_URL")
@@ -26,7 +43,7 @@ def get_token_from_header():
     return auth.split(" ")[1]
 
 def get_public_key(token):
-    jwks = requests.get(CLERK_JWKS_URL).json()
+    jwks = get_cached_jwks()
     unverified_header = jwt.get_unverified_header(token)
 
     for key in jwks["keys"]:

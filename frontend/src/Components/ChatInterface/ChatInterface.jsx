@@ -98,9 +98,7 @@ const ChatContainer = () => {
       setMessages([]);
     }
 
-    if (updatedChats.length === 0) {
-      setSidePanelOpen(false);
-    }
+
   };
 
   const handleSelectChat = (chatId) => {
@@ -134,7 +132,6 @@ const ChatContainer = () => {
 
       const { message } = res.data;
 
-      // Replace the last optimistic message with the real response
       setMessages(prev => [
         ...prev.slice(0, -1),
         message

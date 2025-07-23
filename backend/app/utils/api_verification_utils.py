@@ -22,9 +22,4 @@ def verify_api_key():
     if not is_key_valid(db_key):
         abort(401, "API key is expired or inactive")
 
-    # Usage tracking
-    db_key.last_used_at = datetime.utcnow()
-    db_key.usage_count += 1
-    db.session.commit()
-
     return db_key 
