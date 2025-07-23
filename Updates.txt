@@ -53,3 +53,6 @@ Enable chatbot to remember recent messages(contextual awareness) when accessed t
 
 v19: 
 Add API Call Rate Limit using flask-limiter, Refactored Error Responses From Backend.
+
+v20:
+Updated logic to insert the user info into the user table instantly after login.

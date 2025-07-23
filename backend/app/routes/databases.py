@@ -15,6 +15,10 @@ database_bp = Blueprint('databases', __name__)
 def get_user_databases():
     user = verify_clerk_token()
     user_id = user["sub"]
+    email = get_clerk_user_email(user_id)
+    # print(f"[User Info] ID: {user_id}, Email: {email}")
+
+    ensure_user_in_supabase(user_id, email)
 
     results = DatabaseConnection.query.filter_by(user_id=user_id).all()
     return jsonify([db.to_dict() for db in results])
@@ -25,9 +29,9 @@ def add_database():
     print("User payload:", user)
     user_id = user["sub"]
     email = get_clerk_user_email(user_id)
-    print(f"[User Info] ID: {user_id}, Email: {email}")
+    # print(f"[User Info] ID: {user_id}, Email: {email}")
 
-    ensure_user_in_supabase(user_id, email)
+    # ensure_user_in_supabase(user_id, email)
 
     data = request.get_json()
 
