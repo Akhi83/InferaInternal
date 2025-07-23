@@ -39,9 +39,14 @@ def handle_llm_query():
         user_id = db_key.user_id
         db_obj = DatabaseConnection.query.filter_by(database_name=database_name, user_id=user_id).first()
         if not db_obj:
-            return jsonify({"error": "Database not found"}), 404
+            return jsonify({
+                "message": {
+                    "prompt": prompt,
+                    "response": f"Failed to locate database with name {database_name}."
+            }}), 404
 
         database_id = db_obj.database_id  # optional, only if you still need the id
+        history = data.get("history", [])
 
     elif not auth:
         return jsonify({"error" : "Invalid Authentication Header"}), 400
