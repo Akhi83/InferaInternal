@@ -212,7 +212,6 @@
   position: relative;
   overflow: hidden;
   transition: var(--transition);
-  box-shadow: 0 4px 15px var(--nav-hover-shadow);
 }
 
 .add-database-btn:hover {

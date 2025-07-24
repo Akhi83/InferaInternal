@@ -56,3 +56,8 @@ Add API Call Rate Limit using flask-limiter, Refactored Error Responses From Bac
 
 v20:
 Updated logic to insert the user info into the user table instantly after login.
+
+v20.1
+Removed the dropdown for selecting the connected database for chat from header
+Enforced one chat one database rule
+Removed the glow effect from Connect Database button

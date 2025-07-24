@@ -12,6 +12,7 @@ class Chat(db.Model):
     title = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
     updated_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    database_id = db.Column(db.Text, nullable=True)
 
     messages = db.relationship('Message', backref='chat', cascade="all, delete-orphan", lazy=True)
 
@@ -21,7 +22,8 @@ class Chat(db.Model):
             'user_id': self.user_id,
             'title': self.title,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'database_id': self.database_id
         }
         if include_messages:
             data['messages'] = [message.to_dict() for message in self.messages]

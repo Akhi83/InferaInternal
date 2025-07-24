@@ -1,24 +1,15 @@
 import React from 'react';
-import { Dropdown } from 'react-bootstrap';
+import './DBHeader.css';
 
-const Header = ({ databases, selectedDb, onSelectDb, chatName }) => {
+const Header = ({ selectedDbName, chatName }) => {
   return (
-    <div className="app-header">
+    <div className="app-header d-flex justify-content-between align-items-center px-3 py-2">
       <h5 className="chat-title m-0">
         {chatName || 'Infera'}
       </h5>
-      <Dropdown onSelect={onSelectDb}>
-        <Dropdown.Toggle className="db-dropdown-toggle">
-          {selectedDb?.database_name || 'Select Database'}
-        </Dropdown.Toggle>
-        <Dropdown.Menu className="db-dropdown-menu">
-          {databases.map((db) => (
-            <Dropdown.Item key={db.database_id} eventKey={db.database_id}>
-              {db.database_name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+      <div className="connected-db px-3 py-2">
+        {selectedDbName}
+      </div>
     </div>
   );
 };

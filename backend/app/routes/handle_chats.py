@@ -16,12 +16,17 @@ def create_chat():
 
     data = request.get_json()
     title = data.get("title")
+    database_id = data.get("database_id")
+
     if not title:
         return jsonify({"error": "Title is required"}), 400
+    if not database_id:
+        return jsonify({"error": "Database ID is required"}), 400
 
     new_chat = Chat(
         user_id=user_id,
         title=title,
+        database_id=database_id
     )
 
     db.session.add(new_chat)

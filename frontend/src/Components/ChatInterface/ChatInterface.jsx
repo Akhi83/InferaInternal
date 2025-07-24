@@ -15,7 +15,6 @@ const ChatContainer = () => {
   const [selectedDb, setSelectedDb] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newChatTitle, setNewChatTitle] = useState('');
 
   const { getToken, isLoaded } = useAuth();
   const messagesEndRef = useRef(null);
@@ -32,21 +31,27 @@ const ChatContainer = () => {
       const chatsData = chatRes.data;
       setChats(chatsData);
 
-      if (chatsData.length > 0) {
-        setActiveChatId(chatsData[0].chat_id);
-      }      
-      setSidePanelOpen(true);
-
       const dbRes = await axios.get('/api/databases', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const activeDbs = dbRes.data.filter(db => db.database_status === 'Active');
       setDatabases(activeDbs);
-      if (activeDbs.length > 0) setSelectedDb(activeDbs[0]);
+
+      if (chatsData.length > 0) {
+        const firstChat = chatsData[0];
+        setActiveChatId(firstChat.chat_id);
+        if (firstChat.database_id) {
+          const db = activeDbs.find(d => d.database_id === firstChat.database_id);
+          setSelectedDb(db);
+        } else if (activeDbs.length > 0) {
+          setSelectedDb(activeDbs[0]);
+        }
+      }
+      setSidePanelOpen(true);
     };
 
     fetchInitialData().catch(console.error);
-  }, [isLoaded]);
+  }, [isLoaded, getToken]);
 
   useEffect(() => {
     if (!activeChatId) return;
@@ -68,20 +73,21 @@ const ChatContainer = () => {
     }
   }, [messages]);
 
-  const handleCreateChat = async (title) => {
-    if (!title.trim()) return;
+  const handleCreateChat = async (title, dbId) => {
+    if (!title.trim() || !dbId) return;
 
     const token = await getToken();
-    const res = await axios.post('/api/chats', { title }, {
+    const res = await axios.post('/api/chats', { title, database_id: dbId }, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     const newChat = res.data;
     setChats([newChat, ...chats]);
     setActiveChatId(newChat.chat_id);
+    const selected = databases.find(db => db.database_id === dbId);
+    setSelectedDb(selected);
     setSidePanelOpen(true);
     setShowCreateModal(false);
-    setNewChatTitle('');
   };
 
   const handleDeleteChat = async (chatId) => {
@@ -94,22 +100,31 @@ const ChatContainer = () => {
     setChats(updatedChats);
 
     if (activeChatId === chatId) {
-      setActiveChatId(updatedChats[0]?.chat_id || null);
+      const nextChat = updatedChats[0] || null;
+      setActiveChatId(nextChat?.chat_id || null);
+      if (nextChat && nextChat.database_id) {
+        const db = databases.find(d => d.database_id === nextChat.database_id);
+        setSelectedDb(db);
+      } else {
+        setSelectedDb(databases.length > 0 ? databases[0] : null);
+      }
       setMessages([]);
     }
-
-
   };
 
   const handleSelectChat = (chatId) => {
     setActiveChatId(chatId);
+    const chat = chats.find(c => c.chat_id === chatId);
+    if (chat && chat.database_id) {
+      const db = databases.find(d => d.database_id === chat.database_id);
+      setSelectedDb(db);
+    }
   };
 
   const handleSend = async (prompt) => {
     if (!selectedDb || !activeChatId || !prompt.trim()) return;
     const token = await getToken();
 
-    // Optimistically show placeholder response
     const tempMessage = {
       prompt,
       response: "Thinking..."
@@ -149,12 +164,6 @@ const ChatContainer = () => {
     }
   };
 
-
-  const handleDbSelect = (id) => {
-    const db = databases.find((d) => d.database_id === id);
-    setSelectedDb(db);
-  };
-
   const handleEmptyClick = () => {
     if (chats.length === 0) {
       setShowCreateModal(true);
@@ -179,9 +188,7 @@ const ChatContainer = () => {
         <Col className="d-flex flex-column p-0 h-100 overflow-hidden">
           <div className="shrink-0">
             <Header
-              databases={databases}
-              selectedDb={selectedDb}
-              onSelectDb={handleDbSelect}
+              selectedDbName={selectedDb ? selectedDb.database_name : 'No Database Selected'}
             />
           </div>
 
@@ -201,8 +208,7 @@ const ChatContainer = () => {
         show={showCreateModal}
         onHide={() => setShowCreateModal(false)}
         onCreate={handleCreateChat}
-        chatTitle={newChatTitle}
-        setChatTitle={setNewChatTitle}
+        databases={databases}
       />
     </Container>
   );
