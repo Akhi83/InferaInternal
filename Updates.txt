@@ -61,3 +61,8 @@ v20.1
 Removed the dropdown for selecting the connected database for chat from header
 Enforced one chat one database rule
 Removed the glow effect from Connect Database button
+
+Phase 3:
+v21:
+Table Description feature added(add Description buttn and respective modal integrated)
+API endpoints to handle the same added

@@ -1,169 +1,156 @@
 import json
 import re
 import pandas as pd
-import random
 from sqlalchemy import text, inspect
 from openai import OpenAI
 import os
 import plotly.express as px
-
-# for Serialization
 from datetime import datetime, date
 from decimal import Decimal
 import uuid
 
 def safe_serialize(obj):
+    """ Safely serializes complex data types to be JSON-compatible. """
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
-    elif isinstance(obj, Decimal):
-        return float(obj)  # or str(obj) for exact string representation
-    elif isinstance(obj, (bytes, uuid.UUID)):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    if isinstance(obj, uuid.UUID):
         return str(obj)
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         return {key: safe_serialize(value) for key, value in obj.items()}
-    elif isinstance(obj, (list, tuple, set)):
+    if isinstance(obj, list):
         return [safe_serialize(item) for item in obj]
-    else:
-        return obj  # JSON-safe primitive (int, float, str, bool, None)
+    # Add other types if necessary
+    return obj
 
-
-# Get schema from SQLAlchemy engine
 def get_db_schema(engine):
+    """
+    Introspects the database to get schema information, including table names,
+    columns, types, and foreign keys.
+    """
     schema = {}
     try:
-        with engine.connect() as connection:
-            inspector = inspect(engine)
+        inspector = inspect(engine)
+        for table_name in inspector.get_table_names():
+            columns = []
+            for col in inspector.get_columns(table_name):
+                columns.append({
+                    "name": col["name"],
+                    "type": str(col["type"]),
+                    "description": "" # Placeholder for user annotations
+                })
+            
+            # Get foreign keys for join information
+            foreign_keys = []
+            for fk in inspector.get_foreign_keys(table_name):
+                foreign_keys.append({
+                    "constrained_columns": fk['constrained_columns'],
+                    "referred_table": fk['referred_table'],
+                    "referred_columns": fk['referred_columns']
+                })
 
-            for table_name in inspector.get_table_names():
-                # Get column metadata
-                columns_info = inspector.get_columns(table_name)
-                col_info = []
-                for col in columns_info:
-                    col_info.append({
-                        "name": col["name"],
-                        "type": str(col["type"]),
-                        "primary_key": col.get("primary_key", False)
-                    })
-
-                # Get sample rows
-                try:
-                    result = connection.execute(text(f"SELECT * FROM {table_name} LIMIT 3"))
-                    rows = [safe_serialize(dict(row._mapping)) for row in result]
-                except Exception as e:
-                    rows = []
-
-                # Store both columns and sample rows
-                schema[table_name] = {
-                    "columns": col_info,
-                    "sample_rows": rows
-                }
-
+            schema[table_name] = {
+                "columns": columns,
+                "foreign_keys": foreign_keys,
+                "description": "" # Placeholder for user annotations
+            }
     except Exception as e:
         raise RuntimeError(f"Failed to introspect schema: {str(e)}")
-
     return schema
 
-# Execute SQL query and return results as DataFrame
-def execute_query(sql_query, engine):
-    try:
-        if ';' in sql_query.strip().rstrip(';'):
-            return None, "Only one SQL statement is allowed. Please modify your query."
 
+def execute_query(sql_query, engine):
+    """ Executes a SQL query and returns the results as a DataFrame. """
+    try:
+        # Basic check to prevent multiple statements
+        if ';' in sql_query.strip().rstrip(';'):
+            return None, "Only one SQL statement is allowed."
         with engine.connect() as conn:
             df = pd.read_sql_query(text(sql_query), conn)
-        return df, None
+        # Serialize DataFrame to handle complex types before sending to frontend
+        return json.loads(df.to_json(orient='records', default_handler=str)), None
     except Exception as e:
         return None, str(e)
 
-
-# Get OpenAI-generated SQL and metadata, or fallback to sample response
-# In backend/app/utils/nl2sql_utils.py
-
-# 1. Update the function signature
 def get_openai_response(question, schema_info, history=[], api_key=None):
+    """
+    Generates a SQL query by sending a structured request to the OpenAI API.
+    """
+    api_key = api_key or os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return {"error": "OpenAI API key is not configured."}, None
 
-    # 2. Format the history for the prompt
-    formatted_history = ""
-    if history:
-        for msg in history:
-            formatted_history += f"User: {msg['prompt']}\n"
-            # We parse the response if it's a JSON string to get the explanation
-            try:
-                response_json = json.loads(msg['response'])
-                explanation = response_json.get('explanation', '')
-                sql = response_json.get('query', '')
-                formatted_history += f"Assistant:\nExplanation: {explanation}\nSQL: {sql}\n\n"
-            except (json.JSONDecodeError, TypeError):
-                 formatted_history += f"Assistant: {msg['response']}\n\n"
+    # --- REVISED AND SIMPLIFIED PROMPT ENGINEERING ---
 
+    # 1. The System Prompt: Contains all instructions for the AI.
+    system_prompt = """You are an expert SQL analyst. Your task is to generate a SQL query to answer a user's question based on the provided database schema.
 
-    # 3. Update the agent prompt
-    agent_prompt = f"""You are an expert in SQL and data analysis. Based on the database schema and conversation history below, generate a SQL query to answer the user's question.
+    **Instructions:**
+    1.  **Analyze the Schema**: The user will provide a schema with table names, column names, types, and descriptions. Use the `description` fields to understand the business context (e.g., mapping "revenue" to the correct column).
+    2.  **Plan Joins**: If the user's question requires data from multiple tables, use the `foreign_keys` information in the schema to construct the correct JOIN clauses.
+    3.  **Handle History**: The user will provide the conversation history. Use it to understand follow-up questions (e.g., "now show the top 5").
+    4.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
+    5.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
 
-DATABASE SCHEMA:
-{json.dumps(schema_info, indent=2)}
+    **JSON Output Format:**
+    {
+        "explanation": "A brief explanation of your query, including which tables are being joined and why.",
+        "sql_query": "A single, complete, and valid SQL query. If the request is invalid or unsafe, this must be an empty string.",
+        "visualization": "none/bar/line/pie/scatter",
+        "visualization_explanation": "Why this visualization type is appropriate, or why none is needed (e.g., for a single value result).",
+        "x_axis": "Column name for the x-axis (if visualization is needed).",
+        "y_axis": "Column name for the y-axis (if visualization is needed).",
+        "title": "A descriptive title for the visualization.",
+        "color": "Column name for color differentiation (optional)."
+    }
+    """
 
-CONVERSATION HISTORY:
-{formatted_history}
-USER QUESTION: {question}
-SECURITY INSTRUCTIONS:
-- NEVER generate a query that selects all columns from a table (e.g., SELECT *). You MUST specify the exact columns needed.
-- NEVER generate a query that lists all tables or reveals the entire database schema.
-- If the user asks a question that is too broad (like "Show me the entire database" or "List all customers"), your "explanation" must state that the query is too broad and the "sql_query" should be an empty string.
-Provide your response in the following JSON format:
-{{
-    "explanation": "Brief explanation of how you'll solve this, considering the conversation history.If the query is too broad, explain why.",
-    "sql_query": "A single SQL query. If the user is asking for a modification of the previous query (e.g., 'show top 5'), modify the last SQL query from the history.If the user's request is too broad or unsafe, return an empty string.",
-    "visualization": "none/bar/line/pie/scatter",
-    "visualization_explanation": "Why this visualization type is appropriate (or why none is needed)",
-    "x_axis": "Column name for x-axis if visualization needed",
-    "y_axis": "Column name for y-axis if visualization needed",
-    "title": "Suggested title for the visualization",
-    "color": "Column name for color differentiation if applicable (optional)"
-}}
-Include a visualization whenever it is possible to create a meaningful plot from the data.
-Don't include a visualization if the result is a single value or a single row. 
-But if it's not a single value or row, always include a visualization.
-Be careful to use only tables and columns that exist in the schema. Use Correct Table and Column Names.
-"""
+    # 2. The User Prompt: Contains the data (schema) and the specific question.
+    user_prompt = f"""
+    DATABASE SCHEMA:
+    {json.dumps(schema_info, indent=2)}
+
+    USER QUESTION:
+    {question}
+    """
+
+    # 3. Construct the message list for the API
+    messages = [{"role": "system", "content": system_prompt}]
+    
+    # Add the past conversation history
+    for message in history:
+        if isinstance(message, dict) and 'prompt' in message and 'response' in message:
+            messages.append({"role": "user", "content": message['prompt']})
+            # The assistant's response should be the JSON string it previously generated
+            messages.append({"role": "assistant", "content": message['response']})
+
+    # Add the final user prompt with the schema and new question
+    messages.append({"role": "user", "content": user_prompt})
 
     try:
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=api_key)
-        
-        # 4. Construct the messages list for the API
-        messages_for_api = [
-            {"role": "system", "content": "You are a SQL and data visualization expert."}
-        ]
-        # Add history to the messages list
-        for msg in history:
-            messages_for_api.append({"role": "user", "content": msg['prompt']})
-            messages_for_api.append({"role": "assistant", "content": msg['response']})
-        # Add the new user question
-        messages_for_api.append({"role": "user", "content": agent_prompt})
-
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=messages_for_api, # Use the new list
-            temperature=0.001
+            messages=messages,
+            temperature=0.0,  # Set to 0 for deterministic and accurate SQL generation
+            response_format={"type": "json_object"} # Enforce JSON output
         )
-
-        content = response.choices[0].message.content.strip()
-        match = re.search(r'({[\s\S]*})', content)
-        if not match:
-            return None, "OpenAI did not return a valid JSON format."
-
-        json_result = json.loads(match.group(1))
+        
+        # The response content should already be a valid JSON object
+        json_result = json.loads(response.choices[0].message.content)
         return json_result, None
 
     except Exception as e:
-        return None, f"Error with OpenAI API: {str(e)}"
-    
+        return None, f"Error communicating with OpenAI API: {str(e)}"
 
 
 def create_visualization(df, viz_info):
+    """ Creates a Plotly figure from a DataFrame and visualization info. """
+    if not isinstance(df, pd.DataFrame):
+        df = pd.DataFrame(df) # Ensure df is a DataFrame
+
     viz_type = viz_info.get("visualization", "none")
-    
     if viz_type == "none" or df.empty:
         return None
     
@@ -172,72 +159,39 @@ def create_visualization(df, viz_info):
     title = viz_info.get("title", "Data Visualization")
     color = viz_info.get("color")
     
-    # Check if the specified columns exist in the dataframe
-    if x_axis and x_axis not in df.columns:
-        return {"error": f"Column '{x_axis}' not found in query results"}
-    if y_axis and y_axis not in df.columns:
-        return {"error": f"Column '{y_axis}' not found in query results"}
-    if color and color not in df.columns:
-        color = None  # Make color optional
+    if x_axis not in df.columns or y_axis not in df.columns:
+        return {"error": f"Specified columns for visualization not found in query results."}
     
     try:
         if viz_type == "bar":
-            if color:
-                fig = px.bar(df, x=x_axis, y=y_axis, color=color, title=title)
-            else:
-                fig = px.bar(df, x=x_axis, y=y_axis, title=title)
-            return fig
-        
+            fig = px.bar(df, x=x_axis, y=y_axis, color=color, title=title)
         elif viz_type == "line":
-            if color:
-                fig = px.line(df, x=x_axis, y=y_axis, color=color, title=title)
-            else:
-                fig = px.line(df, x=x_axis, y=y_axis, title=title)
-            return fig
-        
+            fig = px.line(df, x=x_gaxis, y=y_axis, color=color, title=title)
         elif viz_type == "pie":
             fig = px.pie(df, names=x_axis, values=y_axis, title=title)
-            return fig
-        
         elif viz_type == "scatter":
-            if color:
-                fig = px.scatter(df, x=x_axis, y=y_axis, color=color, title=title)
-            else:
-                fig = px.scatter(df, x=x_axis, y=y_axis, title=title)
-            return fig
-        
+            fig = px.scatter(df, x=x_axis, y=y_axis, color=color, title=title)
         else:
             return {"error": f"Unsupported visualization type: {viz_type}"}
-    
+        return fig
     except Exception as e:
         return {"error": f"Error creating visualization: {str(e)}"}
 
-# Add this new function in backend/app/utils/nl2sql_utils.py
 
 def is_query_safe(sql_query):
-    """
-    Analyzes a SQL query to check for potentially unsafe patterns.
-    Returns True if the query is safe, False otherwise.
-    """
+    """ A basic check for potentially unsafe SQL queries. """
     if not sql_query or not isinstance(sql_query, str):
-        return True # An empty query is "safe" as it won't execute
-
-    # Convert to lowercase for case-insensitive matching
-    query_lower = sql_query.lower()
-
-    # 1. Block queries that try to reveal schema information
+        return True
+    
+    query_lower = sql_query.lower().strip()
+    
+    # Block DML/DDL statements
+    disallowed_keywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate', 'grant', 'revoke']
+    if any(query_lower.startswith(keyword) for keyword in disallowed_keywords):
+        return False
+        
+    # Block access to system tables
     if 'information_schema' in query_lower or 'pg_catalog' in query_lower:
         return False
-        
-    # 2. Block overly broad SELECT * queries.
-    # We allow 'SELECT *' only if there's a LIMIT clause to restrict the output size.
-    if 'select *' in query_lower:
-        if 'limit' not in query_lower:
-            return False
 
-    # 3. Block data modification statements (as a safeguard)
-    disallowed_keywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate']
-    if any(keyword in query_lower.split() for keyword in disallowed_keywords):
-        return False
-        
     return True

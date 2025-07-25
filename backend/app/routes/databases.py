@@ -25,6 +25,7 @@ def get_user_databases():
 
 @database_bp.route("/api/databases", methods=["POST"])
 def add_database():
+    print("--- ADD DATABASE ENDPOINT HIT ---")
     user = verify_clerk_token()
     print("User payload:", user)
     user_id = user["sub"]
@@ -128,3 +129,45 @@ def update_database(database_id):
 
 
 
+# In backend/app/routes/databases.py
+
+@database_bp.route("/api/databases/<string:database_id>/schema", methods=["GET"])
+def get_database_schema(database_id):
+    """
+    Fetches the schema for a specific database, which can then be annotated.
+    """
+    user = verify_clerk_token()
+    user_id = user["sub"]
+
+    db_conn = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
+    if not db_conn:
+        return jsonify({"error": "Database not found or unauthorized"}), 404
+
+    # The schema is already stored as a JSON string, so we just parse it and return.
+    schema = json.loads(db_conn.database_schema_json or '{}')
+    
+    return jsonify(schema)
+
+
+@database_bp.route("/api/databases/<string:database_id>/schema", methods=["PUT"])
+def update_database_schema(database_id):
+    """
+    Updates the descriptions for tables and columns in the database schema.
+    """
+    user = verify_clerk_token()
+    user_id = user["sub"]
+
+    db_conn = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
+    if not db_conn:
+        return jsonify({"error": "Database not found or unauthorized"}), 404
+
+    updated_schema_data = request.get_json()
+    if not updated_schema_data:
+        return jsonify({"error": "Invalid request body"}), 400
+
+    # We replace the old schema with the new, updated one.
+    db_conn.database_schema_json = json.dumps(updated_schema_data)
+    
+    db.session.commit()
+    
+    return jsonify({"message": "Schema descriptions updated successfully"}), 200

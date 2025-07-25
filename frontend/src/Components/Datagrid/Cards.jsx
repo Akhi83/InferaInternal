@@ -2,10 +2,12 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import './DataCard.css';
 
-function DataCard({ database_id, database_type, database_name, database_status, created_at, onDelete, onEdit }) {
+function DataCard({ database_id, database_type, database_name, database_status, created_at, onDelete, onEdit, onAnnotate }) {
 
   const handleEditCard = () => onEdit(database_id);
   const handleDeleteCard = () => onDelete(database_id);
+  const handleAnnotateCard = () => onAnnotate(database_id);
+
 
   // const getDBIcon = (database) => {
   //   const icons = {
@@ -87,6 +89,17 @@ function DataCard({ database_id, database_type, database_name, database_status, 
               onClick={handleEditCard}
             >
               <span className="btn-text">Edit</span>
+              <div className="btn-ripple"></div>
+            </Button>
+
+           {/* NEW ANNOTATE BUTTON */}
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              className="action-btn annotate-btn"
+              onClick={handleAnnotateCard}
+            >
+              <span className="btn-text">Add Description</span>
               <div className="btn-ripple"></div>
             </Button>
 

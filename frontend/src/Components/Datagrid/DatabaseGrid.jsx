@@ -4,8 +4,9 @@ import Col from 'react-bootstrap/Col';
 import DataCard from './Cards';
 import './DBGrid.css';
 import DatabaseModal from "../Modal/DatabaseModal";
+import AnnotateSchemaModal from './AnnotateSchemaModal'; // Import the new modal
 import { useEffect, useState } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import { useAuth } from "@clerk/clerk-react";
 import DeleteModal from '../Modal/deleteModal';
 
@@ -49,6 +50,10 @@ function DBGrid() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [databaseToDelete, setDatabaseToDelete] = useState(null);
 
+  // State for the new annotation modal
+  const [showAnnotateModal, setShowAnnotateModal] = useState(false);
+  const [selectedDatabaseId, setSelectedDatabaseId] = useState(null);
+
   const fetchDatabases = async () => {
     try {
       const token = await getToken(); 
@@ -78,6 +83,12 @@ function DBGrid() {
       setEditData(dbToEdit);
       setShowModal(true);
     }
+  };
+
+  // Handler to open the new annotation modal
+  const handleAnnotateCard = (database_id) => {
+    setSelectedDatabaseId(database_id);
+    setShowAnnotateModal(true);
   };
 
   const confirmDeleteCard = (database_id) => {
@@ -124,6 +135,15 @@ function DBGrid() {
           onConfirm={handleDeleteConfirm}
         />
 
+        {/* Render the new Annotate Schema Modal */}
+        {selectedDatabaseId && (
+            <AnnotateSchemaModal
+                show={showAnnotateModal}
+                onHide={() => setShowAnnotateModal(false)}
+                databaseId={selectedDatabaseId}
+            />
+        )}
+
 
         {/* Header Section */}
         <div className="grid-header">
@@ -156,7 +176,8 @@ function DBGrid() {
                 <DataCard 
                   {...card} 
                   onDelete={() => confirmDeleteCard(card.database_id)} 
-                  onEdit={() => handleEditCard(card.database_id)} 
+                  onEdit={() => handleEditCard(card.database_id)}
+                  onAnnotate={() => handleAnnotateCard(card.database_id)} // Pass the handler to the card
                 />
               </div>
             </Col>
