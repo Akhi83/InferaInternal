@@ -23,19 +23,24 @@ def get_user_databases():
     results = DatabaseConnection.query.filter_by(user_id=user_id).all()
     return jsonify([db.to_dict() for db in results])
 
+@database_bp.route("/api/databases/<string:database_id>", methods=["GET"])
+def get_database_by_id(database_id):
+    user = verify_clerk_token()
+    user_id = user["sub"]
+
+    db_conn = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
+
+    if not db_conn:
+        return jsonify({"error": "Database not found or unauthorized"}), 404
+
+    return jsonify(db_conn.to_dict(include_string=True)), 200
+
 @database_bp.route("/api/databases", methods=["POST"])
 def add_database():
     user = verify_clerk_token()
-    print("User payload:", user)
     user_id = user["sub"]
-    email = get_clerk_user_email(user_id)
-    # print(f"[User Info] ID: {user_id}, Email: {email}")
-
-    # ensure_user_in_supabase(user_id, email)
-
     data = request.get_json()
 
-    # ✅ Validate input
     required_fields = ["database_string", "database_name", "database_type"]
     missing = [field for field in required_fields if field not in data]
     if missing:
@@ -45,48 +50,49 @@ def add_database():
     status = "Active"
     schema_json = None
 
-    # ✅ Try to connect and fetch schema
     try:
         engine = create_engine(db_string)
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-
-        # If connection succeeds, try fetching schema
-        try:
-            schema = get_db_schema(engine)
-            schema_json = json.dumps(schema)
-        except Exception as schema_error:
-            # Schema fetching failed — still allow creation but mark schema empty
-            schema_json = json.dumps({})
-            print(f"[Schema Error] {schema_error}")
-
     except Exception as conn_error:
-        status = "Inactive"
-        schema_json = json.dumps({})
-        print(f"[Connection Error] {conn_error}")
+        return jsonify({
+            "error": "Connection failed",
+            "details": str(conn_error)
+        }), 400
 
-    # ✅ Create and save database record
-    new_db = DatabaseConnection(
-        user_id=user_id,
-        database_string=db_string,
-        database_name=data["database_name"],
-        database_type=data["database_type"],
-        database_status=status,
-        database_schema_json=schema_json
-    )
-    db.session.add(new_db)
-    db.session.commit()
+    try:
+        schema = get_db_schema(engine)
+        schema_json = json.dumps(schema)
+    except Exception as schema_error:
+        print(f"[Schema Error] {schema_error}")
+        schema_json = json.dumps({})  # still save empty schema
 
-    return jsonify(new_db.to_dict()), 201
+    try:
+        new_db = DatabaseConnection(
+            user_id=user_id,
+            database_string=db_string,
+            database_name=data["database_name"],
+            database_type=data["database_type"],
+            database_status=status,
+            database_schema_json=schema_json
+        )
+        db.session.add(new_db)
+        db.session.commit()
+        return jsonify(new_db.to_dict()), 201
+
+    except Exception as insert_error:
+        db.session.rollback()
+        return jsonify({
+            "error": "Failed to save database",
+            "details": str(insert_error)
+        }), 500
 
 # routes/databases.py
-
 @database_bp.route("/api/databases/<string:database_id>", methods=["DELETE"])
 def delete_database(database_id):
-    user = verify_clerk_token()  # get current logged-in user
+    user = verify_clerk_token()  
     user_id = user["sub"]
 
-    # Fetch the actual record (not just a query)
     db_conn = DatabaseConnection.query.filter_by(database_id=database_id, user_id=user_id).first()
 
     if not db_conn:
@@ -118,8 +124,10 @@ def update_database(database_id):
         engine = create_engine(db_conn.database_string)
         schema = get_db_schema(engine)
         print("✅ Updated schema fetched:", schema)
+        
         db_conn.database_schema_json = json.dumps(schema)
     except Exception as e:
+        db_conn.status = "Inactive"
         print("❌ Failed to fetch updated schema:", e)
 
     db.session.commit()

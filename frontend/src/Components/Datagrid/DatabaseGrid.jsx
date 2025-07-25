@@ -1,14 +1,14 @@
+// DBGrid.js
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import DataCard from './Cards';
 import './DBGrid.css';
 import DatabaseModal from "../Modal/DatabaseModal";
-import { useEffect, useState } from 'react';
-import axios from 'axios'; 
-import { useAuth } from "@clerk/clerk-react";
 import DeleteModal from '../Modal/deleteModal';
-
+import { useEffect } from 'react';
+import { useAuth } from "@clerk/clerk-react";
+import useDatabaseStore from '../../store/useDatabaseStore';
 
 function AddDatabaseCard({ onAddDatabase }) {
   return (
@@ -23,48 +23,42 @@ function AddDatabaseCard({ onAddDatabase }) {
             </svg>
           </div>
         </div>
-        
         <h5 className="add-title">Add New Database</h5>
         <p className="add-description">
           Connect a new database to your dashboard and start monitoring its performance.
         </p>
-        
         <button className="add-database-btn" aria-label="Add new database connection">
           <span className="btn-text">Connect Database</span>
           <div className="btn-shine"></div>
         </button>
       </div>
-      
       <div className="card-glow"></div>
     </div>
   );
 }
 
 function DBGrid() {
-  const { getToken } = useAuth();
-  const [showModal, setShowModal] = useState(false);
-  const [cardData, setCardData] = useState([]);
-  const [editData, setEditData] = useState(null);
+  const { isLoaded, getToken } = useAuth();
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [databaseToDelete, setDatabaseToDelete] = useState(null);
-
-  const fetchDatabases = async () => {
-    try {
-      const token = await getToken(); 
-      const res = await axios.get('/api/databases', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCardData(res.data);
-    } catch (error) {
-      console.error("Error fetching databases:", error);
-    }
-  };
+  const {
+    databases,
+    showModal,
+    showDeleteModal,
+    editData,
+    fetchDatabases,
+    setShowModal,
+    setEditData,
+    setShowDeleteModal,
+    setDatabaseToDelete,
+    deleteDatabase,
+  } = useDatabaseStore();
 
   useEffect(() => {
-    fetchDatabases();
+    if (!isLoaded) return;
+    (async () => {
+      const token = await getToken();
+      fetchDatabases(token);
+    })();
   }, []);
 
   const handleAddDatabase = () => {
@@ -73,7 +67,7 @@ function DBGrid() {
   };
 
   const handleEditCard = (database_id) => {
-    const dbToEdit = cardData.find(db => db.database_id === database_id);
+    const dbToEdit = databases.find(db => db.database_id === database_id);
     if (dbToEdit) {
       setEditData(dbToEdit);
       setShowModal(true);
@@ -86,18 +80,8 @@ function DBGrid() {
   };
 
   const handleDeleteConfirm = async () => {
-    try {
-      const token = await getToken();
-      await axios.delete(`/api/databases/${databaseToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setShowDeleteModal(false);
-      setDatabaseToDelete(null);
-      fetchDatabases();
-    } catch (error) {
-      console.error("Failed to delete database:", error);
-      alert("Failed to delete database. Please try again.");
-    }
+    const token = await getToken();
+    deleteDatabase(token);
   };
 
   return (
@@ -110,59 +94,59 @@ function DBGrid() {
               setShowModal(false);
               setEditData(null);
             }}
-            onDatabaseAdd={fetchDatabases}
-            onDatabaseEdit={fetchDatabases}
+            onDatabaseAdd={async () => {
+              const token = await getToken();
+              fetchDatabases(token);
+            }}
+            onDatabaseEdit={async () => {
+              const token = await getToken();
+              fetchDatabases(token);
+            }}
             mode={editData ? "edit" : "add"}
             initialData={editData}
           />
         )}
 
-        {/* Delete Confirmation Modal */}
         <DeleteModal
           show={showDeleteModal}
           onHide={() => setShowDeleteModal(false)}
           onConfirm={handleDeleteConfirm}
         />
 
-
-        {/* Header Section */}
+        {/* Header */}
         <div className="grid-header">
           <div className="header-content">
             <h2 className="grid-title">Database Connections</h2>
-            <p className="grid-subtitle">
-              Monitor and manage your database connections in real-time
-            </p>
+            <p className="grid-subtitle">Monitor and manage your database connections in real-time</p>
           </div>
           <div className="header-stats">
             <div className="stat-item">
               <span className="stat-number">
-                {cardData.filter(db => db.database_status === 'Active').length}
+                {databases.filter(db => db.database_status === 'Active').length}
               </span>
               <span className="stat-label">Active</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item">
-              <span className="stat-number">{cardData.length}</span>
+              <span className="stat-number">{databases.length}</span>
               <span className="stat-label">Total</span>
             </div>
           </div>
         </div>
 
-        {/* Grid Section */}
+        {/* Grid */}
         <Row xs={1} sm={2} md={2} lg={3} xl={4} className="db-grid g-4">
-          {cardData.map((card, index) => (
+          {databases.map((card, index) => (
             <Col key={index} className="grid-col">
               <div className="card-wrapper">
-                <DataCard 
-                  {...card} 
-                  onDelete={() => confirmDeleteCard(card.database_id)} 
-                  onEdit={() => handleEditCard(card.database_id)} 
+                <DataCard
+                  {...card}
+                  onDelete={() => confirmDeleteCard(card.database_id)}
+                  onEdit={() => handleEditCard(card.database_id)}
                 />
               </div>
             </Col>
           ))}
-          
-          {/* Add Database Card */}
           <Col className="grid-col">
             <div className="card-wrapper add-card-wrapper">
               <AddDatabaseCard onAddDatabase={handleAddDatabase} />

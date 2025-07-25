@@ -6,15 +6,18 @@ import SidePanel from './SidePanel';
 import DisplayPanel from './DisplayPanel';
 import Header from './DBHeader';
 import CreateChatModal from '../Modal/AddChatModal';
+import useDatabaseStore from '../../store/useDatabaseStore';
+// import { useChatStore } from '../store/useChatsStore';
 
 const ChatContainer = () => {
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [messages, setMessages] = useState([]); 
-  const [databases, setDatabases] = useState([]);
-  const [selectedDb, setSelectedDb] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);  
+  const { databases, setDatabases, selectedDb, setSelectedDb } = useDatabaseStore();
+  // const { chats,  activeChatId,  setChats,  setActiveChatId, databases, setDatabases, selectedDb, setSelectedDb, setMessages,  getMessages,  clearMessages,} = useChatStore();
+
 
   const { getToken, isLoaded } = useAuth();
   const messagesEndRef = useRef(null);

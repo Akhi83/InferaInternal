@@ -18,6 +18,8 @@ export default function DatabaseModal({
     database_string: '',
     database_name: ''
   });
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -41,7 +43,7 @@ export default function DatabaseModal({
     const { database_type, database_string, database_name } = formData;
 
     if (!database_type || !database_string || !database_name) {
-      alert("All fields are required.");
+      setError("All fields are required.");
       return;
     }
 
@@ -52,35 +54,51 @@ export default function DatabaseModal({
     };
 
     const pattern = patterns[database_type];
-    if (pattern && !pattern.test(database_string)) {
-      alert(`Invalid ${database_type} connection string format.`);
+    if (pattern && !pattern.test(database_string)) {      
+      setError(`${database_type} connection string format.`);
       return;
     }
 
-    try {
-      const token = await window.Clerk?.session?.getToken();
+setError(null); // clear previous error
+  try {
+    const token = await window.Clerk?.session?.getToken();
 
-      if (mode === "edit") {
-        await axios.put(
-          `/api/databases/${initialData.database_id}`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        onDatabaseEdit?.();
-      } else {
-        await axios.post(
-          '/api/databases',
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        onDatabaseAdd?.();
-      }
-
-      onHide();
-    } catch (error) {
-      console.error('Error submitting database:', error.response?.data || error.message);
-      alert("Failed: " + (error.response?.data?.error || error.message));
+    if (mode === "edit") {
+      await axios.put(
+        `/api/databases/${initialData.database_id}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      onDatabaseEdit?.();
+    } else {
+      await axios.post(
+        '/api/databases',
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      onDatabaseAdd?.();
     }
+
+    onHide();
+  } catch (error) {
+    const responseError = error?.response?.data;
+    const statusCode = error?.response?.status;
+
+    let message = "Something went wrong. Please try again.";
+
+    if (statusCode === 400 && responseError?.error === "Connection failed") {
+      message = "Please recheck your connection string.";
+    } else if (statusCode === 400 && responseError?.error?.includes("Missing fields")) {
+      message = "Missing required fields.";
+    } else if (statusCode === 500) {
+      message = "Internal server error. Try again later.";
+    } else if (responseError?.error) {
+      message = `${responseError.error}`;
+    }
+
+    setError(message);
+    console.error("Database submission error:", error);
+  }
   };
 
   return (
@@ -96,6 +114,11 @@ export default function DatabaseModal({
         </Modal.Header>
 
         <Modal.Body className="custom-body">
+          {error && (
+            <div className="text-danger mb-3" style={{ fontWeight: 'bold' }}>
+              {error}
+            </div>
+          )}
           <div className="form-container">
             <div className="form-group">
               <Form.Label className="custom-label">

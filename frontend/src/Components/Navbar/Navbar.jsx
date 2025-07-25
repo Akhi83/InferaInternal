@@ -10,7 +10,7 @@ import './NavigationBar.css';
 const tabs = [
   { name: "DASHBOARD", path: "dashboard" },
   { name: "CHAT", path: "chat" },
-  { name: "API", path: "apikey" }
+  { name: "API", path: "key" }
 ];
 
 

@@ -1,19 +1,42 @@
 import { create } from 'zustand';
-import LZString from 'lz-string';
-
-export const useChatStore = create((set, get) => ({
-  // State
+import LZString from 'lz-string';export const useChatStore = create((set, get) => ({
   activeChatId: null,
   chats: [],
   messagesCache: {},
   databases: [],
   selectedDb: null,
 
-  // Actions
   setActiveChatId: (id) => set({ activeChatId: id }),
   setChats: (chats) => set({ chats }),
-  setDatabases: (databases) => set({ databases }),
-  setSelectedDb: (db) => set({ selectedDb: db }),
+
+  addChat: (chat) => {
+    set((state) => ({
+      chats: [...state.chats, chat],
+      activeChatId: chat.chat_id,
+    }));
+  },
+
+  deleteChat: (chatId) => {
+    set((state) => {
+      const newChats = state.chats.filter((chat) => chat.chat_id !== chatId);
+      const newCache = { ...state.messagesCache };
+      delete newCache[chatId];
+      localStorage.removeItem(`chat-${chatId}`);
+
+      const isActive = state.activeChatId === chatId;
+
+      return {
+        chats: newChats,
+        messagesCache: newCache,
+        activeChatId: isActive ? (newChats[0]?.chat_id || null) : state.activeChatId,
+      };
+    });
+  },
+
+  selectChat: (chatId) => {
+    get().getMessages(chatId);
+    set({ activeChatId: chatId });
+  },
 
   setMessages: (chatId, messages) => {
     const compressed = LZString.compress(JSON.stringify(messages));
