@@ -10,7 +10,7 @@ import CreateChatModal from '../Modal/AddChatModal';
 const ChatContainer = () => {
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); 
   const [databases, setDatabases] = useState([]);
   const [selectedDb, setSelectedDb] = useState(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(true);

@@ -8,6 +8,9 @@ Thumbs.db
 **/__pycache__/
 **/.env
 
+*/__pycache__/
+*/*.pyc
+
 # backend/
 backend/__pycache__/
 backend/*.py[cod]
