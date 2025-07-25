@@ -1,14 +1,20 @@
-import React from 'react';
+import {useState, useEffect } from 'react';
 import { FiMenu, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import './SidePanel.css';
 import DeleteModal from '../Modal/deleteModal';
 
-const SidePanel = ({ chats, onSelectChat, onNewChat, onDeleteChat, activeChatId }) => {
-  const [collapsed, setCollapsed] = React.useState(false);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [chatToDelete, setChatToDelete] = React.useState(null);
+const SidePanel = ({
+  chats,
+  activeChatId,
+  onDeleteChat, 
+  onSelectChat,
+  onNewChat
+}) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (chats.length === 0) {
       setCollapsed(true);
     }

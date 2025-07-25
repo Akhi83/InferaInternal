@@ -6,18 +6,25 @@ import SidePanel from './SidePanel';
 import DisplayPanel from './DisplayPanel';
 import Header from './DBHeader';
 import CreateChatModal from '../Modal/AddChatModal';
-import useDatabaseStore from '../../store/useDatabaseStore';
-// import { useChatStore } from '../store/useChatsStore';
+import { useChatsStore } from '../../Store/useChatsStore';
 
 const ChatContainer = () => {
-  const [chats, setChats] = useState([]);
-  const [activeChatId, setActiveChatId] = useState(null);
-  const [messages, setMessages] = useState([]); 
   const [sidePanelOpen, setSidePanelOpen] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);  
-  const { databases, setDatabases, selectedDb, setSelectedDb } = useDatabaseStore();
-  // const { chats,  activeChatId,  setChats,  setActiveChatId, databases, setDatabases, selectedDb, setSelectedDb, setMessages,  getMessages,  clearMessages,} = useChatStore();
-
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const {
+    chats,
+    databases,
+    selectedDb,
+    activeChatId,
+    getMessages,
+    setMessages,
+    setChats,
+    setActiveChatId,
+    addChat,
+    deleteChat,
+    setDatabases,
+    setSelectedDb
+  } = useChatsStore();
 
   const { getToken, isLoaded } = useAuth();
   const messagesEndRef = useRef(null);
@@ -27,29 +34,27 @@ const ChatContainer = () => {
 
     const fetchInitialData = async () => {
       const token = await getToken();
-      const chatRes = await axios.get('/api/chats', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+
+      const [chatRes, dbRes] = await Promise.all([
+        axios.get('/api/chats', { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get('/api/databases', { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
 
       const chatsData = chatRes.data;
-      setChats(chatsData);
-
-      const dbRes = await axios.get('/api/databases', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
       const activeDbs = dbRes.data.filter(db => db.database_status === 'Active');
+
+      setChats(chatsData);
       setDatabases(activeDbs);
 
-      if (chatsData.length > 0) {
+      if (!activeChatId && chatsData.length > 0) {
         const firstChat = chatsData[0];
         setActiveChatId(firstChat.chat_id);
-        if (firstChat.database_id) {
-          const db = activeDbs.find(d => d.database_id === firstChat.database_id);
-          setSelectedDb(db);
-        } else if (activeDbs.length > 0) {
-          setSelectedDb(activeDbs[0]);
-        }
+
+        const db = activeDbs.find(d => d.database_id === firstChat.database_id);
+        setSelectedDb(db || activeDbs[0] || null);
       }
+
+
       setSidePanelOpen(true);
     };
 
@@ -59,36 +64,47 @@ const ChatContainer = () => {
   useEffect(() => {
     if (!activeChatId) return;
 
+    
+    const cached = getMessages(activeChatId);
+    if (cached.length > 0) {
+      setMessages(activeChatId, cached); 
+    }
+
+    // Then fetch fresh from server in background
     const fetchMessages = async () => {
       const token = await getToken();
-      const msgRes = await axios.get(`/api/chats/${activeChatId}/messages`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.get(`/api/chats/${activeChatId}/messages`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setMessages(msgRes.data);
+
+      setMessages(activeChatId, res.data);
     };
 
     fetchMessages().catch(console.error);
-  }, [activeChatId, getToken]);
+  }, [activeChatId]);
+
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [getMessages(activeChatId)]); 
 
   const handleCreateChat = async (title, dbId) => {
     if (!title.trim() || !dbId) return;
-
     const token = await getToken();
+
     const res = await axios.post('/api/chats', { title, database_id: dbId }, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     const newChat = res.data;
-    setChats([newChat, ...chats]);
+    addChat(newChat);
     setActiveChatId(newChat.chat_id);
+
     const selected = databases.find(db => db.database_id === dbId);
     setSelectedDb(selected);
+
     setSidePanelOpen(true);
     setShowCreateModal(false);
   };
@@ -96,29 +112,31 @@ const ChatContainer = () => {
   const handleDeleteChat = async (chatId) => {
     const token = await getToken();
     await axios.delete(`/api/chats/${chatId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    const updatedChats = chats.filter(chat => chat.chat_id !== chatId);
-    setChats(updatedChats);
+    deleteChat(chatId);
 
     if (activeChatId === chatId) {
-      const nextChat = updatedChats[0] || null;
+      const updated = chats.filter(chat => chat.chat_id !== chatId);
+      const nextChat = updated[0] || null;
       setActiveChatId(nextChat?.chat_id || null);
-      if (nextChat && nextChat.database_id) {
+
+      if (nextChat?.database_id) {
         const db = databases.find(d => d.database_id === nextChat.database_id);
         setSelectedDb(db);
       } else {
-        setSelectedDb(databases.length > 0 ? databases[0] : null);
+        setSelectedDb(databases[0] || null);
       }
-      setMessages([]);
+
+      setMessages(chatId, []);
     }
   };
 
   const handleSelectChat = (chatId) => {
     setActiveChatId(chatId);
     const chat = chats.find(c => c.chat_id === chatId);
-    if (chat && chat.database_id) {
+    if (chat?.database_id) {
       const db = databases.find(d => d.database_id === chat.database_id);
       setSelectedDb(db);
     }
@@ -128,12 +146,16 @@ const ChatContainer = () => {
     if (!selectedDb || !activeChatId || !prompt.trim()) return;
     const token = await getToken();
 
+    const currentMessages = getMessages(activeChatId) || [];
+
     const tempMessage = {
       prompt,
       response: "Thinking..."
     };
-    setMessages(prev => [...prev, tempMessage]);
-    const history = messages.slice(-4).map(msg => ({
+
+    setMessages(activeChatId, [...currentMessages, tempMessage]);
+
+    const history = currentMessages.slice(-4).map(msg => ({
       prompt: msg.prompt,
       response: msg.response
     }));
@@ -143,27 +165,23 @@ const ChatContainer = () => {
         prompt,
         database_id: selectedDb.database_id,
         chat_id: activeChatId,
-        history : history
+        history
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const { message } = res.data;
-
-      setMessages(prev => [
-        ...prev.slice(0, -1),
-        message
-      ]);
+      const updated = [...currentMessages, message];
+      setMessages(activeChatId, updated);
 
     } catch (err) {
       const errorMsg = {
         prompt,
-        response: `Error: ${err.response?.data?.error || err.error || 'Unexpected error'}`
+        response: `Error: ${err.response?.data?.error || err.message || 'Unexpected error'}`
       };
-      setMessages(prev => [
-        ...prev.slice(0, -1),
-        errorMsg
-      ]);
+
+      const updated = [...currentMessages.slice(0, -1), errorMsg];
+      setMessages(activeChatId, updated);
     }
   };
 
@@ -172,6 +190,8 @@ const ChatContainer = () => {
       setShowCreateModal(true);
     }
   };
+
+  const messages = getMessages(activeChatId) || [];
 
   return (
     <Container fluid className="h-100 p-0 overflow-hidden">
