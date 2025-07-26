@@ -80,6 +80,18 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     api_key = api_key or os.getenv("OPENAI_API_KEY")
     if not api_key:
         return {"error": "OpenAI API key is not configured."}, None
+    
+    formatted_history = ""
+    if history:
+        for msg in history:
+            formatted_history += f"User: {msg['prompt']}\n"
+            try:
+                response_json = json.loads(msg['response'])
+                explanation = response_json.get('explanation', '')
+                sql = response_json.get('query', '')
+                formatted_history += f"Assistant:\nExplanation: {explanation}\nSQL: {sql}\n\n"
+            except (json.JSONDecodeError, TypeError):
+                 formatted_history += f"Assistant: {msg['response']}\n\n"
 
     # --- REVISED AND SIMPLIFIED PROMPT ENGINEERING ---
 
@@ -89,9 +101,14 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     **Instructions:**
     1.  **Analyze the Schema**: The user will provide a schema with table names, column names, types, and descriptions. Use the `description` fields to understand the business context (e.g., mapping "revenue" to the correct column).
     2.  **Plan Joins**: If the user's question requires data from multiple tables, use the `foreign_keys` information in the schema to construct the correct JOIN clauses.
-    3.  **Handle History**: The user will provide the conversation history. Use it to understand follow-up questions (e.g., "now show the top 5").
-    4.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
-    5.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
+    3.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
+    4.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
+
+    **HOW TO HANDLE CONVERSATION HISTORY (VERY IMPORTANT):**
+    - The user may ask follow-up questions.
+    - Phrases like "of those", "what about them", "her order", or "cheaper than that" refer to the results of the PREVIOUS query.
+    - You MUST look at the `CONVERSATION HISTORY` section below to understand the context.
+    - Modify the last SQL query from the history to answer the new question. Do NOT treat the new question in isolation.
 
     **JSON Output Format:**
     {
@@ -111,6 +128,8 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     DATABASE SCHEMA:
     {json.dumps(schema_info, indent=2)}
 
+    CONVERSATION HISTORY:
+    {formatted_history}
     USER QUESTION:
     {question}
     """
@@ -166,7 +185,7 @@ def create_visualization(df, viz_info):
         if viz_type == "bar":
             fig = px.bar(df, x=x_axis, y=y_axis, color=color, title=title)
         elif viz_type == "line":
-            fig = px.line(df, x=x_gaxis, y=y_axis, color=color, title=title)
+            fig = px.line(df, x=x_axis, y=y_axis, color=color, title=title)
         elif viz_type == "pie":
             fig = px.pie(df, names=x_axis, values=y_axis, title=title)
         elif viz_type == "scatter":

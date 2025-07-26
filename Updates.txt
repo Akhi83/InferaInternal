@@ -66,3 +66,6 @@ Phase 3:
 v21:
 Table Description feature added(add Description buttn and respective modal integrated)
 API endpoints to handle the same added
+
+v21.1:
+fine tuned the prompts to remember context properly
