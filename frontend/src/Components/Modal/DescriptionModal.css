@@ -1,0 +1,111 @@
+.annotate-modal .modal-content {
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+}
+
+.annotate-header {
+  background-color: var(--hover-bg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.annotate-title {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.annotate-body {
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+}
+
+.annotate-form {
+  padding: 4px;
+}
+
+.annotate-accordion {
+  border: none;
+}
+
+.annotate-accordion-item {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.annotate-accordion-header {
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+}
+
+.annotate-accordion-body {
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+  padding: 16px;
+}
+
+.annotate-input {
+  background-color: var(--bg-light) !important;
+  color: var(--text-dark) !important;
+  border: 1px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.form-label .text-muted {
+    color: green !important;
+    font-size: 0.80rem !important;
+}
+
+.annotate-input::placeholder {
+  color: var(--text-light) !important;
+}   
+
+.annotate-loading {
+  text-align: center;
+  color: var(--text-dark);
+}
+
+.form-label-strong {
+  font-weight: 600;
+}
+
+.column-description-heading {
+  font-size: 1.1rem;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.table-description-group,
+.column-description-group {
+  margin-bottom: 12px;
+}
+
+.annotate-footer {
+  background-color: var(--hover-bg) !important;
+  border-top: 1px solid var(--border-light);
+}
+
+.annotate-close-btn,
+.annotate-save-btn {
+  transition: var(--transition);
+}
+
+
+.accordion-button,
+.accordion-button:not(.collapsed),
+.accordion-button:focus {
+  background-color: var(--bg-white) !important;
+  color: var(--text-dark) !important;
+  box-shadow: none;
+  outline: none;
+  border: none;
+  font-weight: 600;
+  font-size: 1.3rem;
+
+}
+
+.accordion-button::after {
+  filter: invert(1);
+}

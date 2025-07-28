@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import DataCard from './Cards';
 import './DBGrid.css';
 import DatabaseModal from "../Modal/DatabaseModal";
-import AnnotateSchemaModal from './AnnotateSchemaModal'; // Import the new modal
+import AnnotateSchemaModal from "../Modal/DescriptionModal";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from "@clerk/clerk-react";

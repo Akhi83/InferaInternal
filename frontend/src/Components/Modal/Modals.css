@@ -15,15 +15,8 @@
   border: none;
 }
 
-.custom-modal-input  {
-  color: var(--text-dark) !important;
-  background-color: var(--border-light) !important;
-}
-
-
 .custom-modal-input::placeholder {
   color: var(--text-dark) !important;
-
 }
 
 .custom-modal-title {
@@ -65,3 +58,7 @@
   border: none;
 }
 
+.form-control, .form-select{
+  background-color: var(--bg-light) !important;
+  color: var(--text-dark) !important;
+}

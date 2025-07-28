@@ -237,6 +237,7 @@
   margin-top: auto;
 }
 
+
 .action-btn {
   flex: 1;
   display: flex !important;
@@ -457,4 +458,63 @@
   .full-timestamp {
     text-align: center;
   }
+}
+
+
+@keyframes expandButton {
+  0% {
+    width: 40px;
+    border-radius: 50%;
+  }
+  100% {
+    width: 160px;
+    border-radius: 6px;
+  }
+}
+
+@keyframes fadeInText {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.expandable-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--hover-bg); /* blue-600 */
+  color: var(--text-dark);
+  overflow: hidden;
+  border: none;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.expandable-button:hover {
+  animation: expandButton 0.3s forwards;
+}
+
+.expandable-button:hover .btn-text-annotate {
+  display: inline;
+  animation: fadeInText 0.3s 0.15s forwards;
+}
+
+.btn-icon-annotate {
+  font-size: 16px;
+}
+
+.btn-text-annotate {
+  display: none;
+  opacity: 0;
+  white-space: nowrap;
+  margin-left: 8px;
 }

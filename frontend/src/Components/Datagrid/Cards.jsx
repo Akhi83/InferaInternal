@@ -1,6 +1,7 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import './DataCard.css';
+import { Plus } from 'lucide-react';
 
 function DataCard({ database_id, database_type, database_name, database_status, created_at, onDelete, onEdit, onAnnotate }) {
 
@@ -45,7 +46,7 @@ function DataCard({ database_id, database_type, database_name, database_status, 
       <Card className="data-card h-100">
         
         {/* Card Header */}
-        <div className="card-header-custom">
+        <div className="card-header-custom justify-space-between">
 {/*           
           <div className="db-icon-wrapper">
             <div className="db-icon">
@@ -53,11 +54,16 @@ function DataCard({ database_id, database_type, database_name, database_status, 
             </div>
           </div> */}
 
-          <div className="status-badge-wrapper">
+          <div className="status-badge-wrapper align-start">
             <div className={`status-badge ${database_status.toLowerCase()}`}>
               <span className="status-text">{database_status}</span>
             </div>
           </div>
+
+          <button className="expandable-button" onClick={handleAnnotateCard}>
+            <Plus className='btn-icon-annotate' />
+            <span className="btn-text-annotate">Add Description</span>
+          </button>
         </div>
 
         <Card.Body className="card-body-custom">
@@ -89,17 +95,6 @@ function DataCard({ database_id, database_type, database_name, database_status, 
               onClick={handleEditCard}
             >
               <span className="btn-text">Edit</span>
-              <div className="btn-ripple"></div>
-            </Button>
-
-           {/* NEW ANNOTATE BUTTON */}
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              className="action-btn annotate-btn"
-              onClick={handleAnnotateCard}
-            >
-              <span className="btn-text">Add Description</span>
               <div className="btn-ripple"></div>
             </Button>
 

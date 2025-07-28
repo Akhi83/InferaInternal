@@ -3,11 +3,11 @@
 }
 
 
-
 :root {   
   --bg-dark: #ffffff;
   --bg-white: #ffffff;
   --text-dark: #202124;
+  --text-light: #3e3f40;
   --bg-light: #ffffff;
   --hover-bg: #f1f3f4;
   --bg-inverted: #34343a;
@@ -23,6 +23,7 @@
   --bg-dark: rgba(0,0,0,0.244);
   --bg-white: #34343a;
   --text-dark: #e8eaed;
+  --text-light: #dadce0;
   --bg-light: #34343a;
   --hover-bg: #3e3f40;
   --bg-inverted: #e8eaed;

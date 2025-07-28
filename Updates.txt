@@ -69,3 +69,6 @@ API endpoints to handle the same added
 
 v21.1:
 fine tuned the prompts to remember context properly
+
+v21.2
+Fixed The Description UI and Card Model UI.  
