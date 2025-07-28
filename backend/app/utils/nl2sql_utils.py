@@ -103,6 +103,7 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     2.  **Plan Joins**: If the user's question requires data from multiple tables, use the `foreign_keys` information in the schema to construct the correct JOIN clauses.
     3.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
     4.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
+    5.  **Visualization**: If the query results can be visualized, include appropriate visualization information in the response. If no visualization is needed, set `visualization` to "none".
 
     **HOW TO HANDLE CONVERSATION HISTORY (VERY IMPORTANT):**
     - The user may ask follow-up questions.To tackle this, you must:
@@ -179,6 +180,10 @@ def create_visualization(df, viz_info):
     y_axis = viz_info.get("y_axis")
     title = viz_info.get("title", "Data Visualization")
     color = viz_info.get("color")
+
+    # FIX: Add this check to handle empty color strings
+    if not color:
+        color = None
     
     if x_axis not in df.columns or y_axis not in df.columns:
         return {"error": f"Specified columns for visualization not found in query results."}

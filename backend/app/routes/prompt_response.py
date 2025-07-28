@@ -106,7 +106,12 @@ def handle_llm_query():
     visualization_json = None
     
     if visualization and not (isinstance(visualization, dict) and 'error' in visualization):
-        visualization_json = visualization.to_json()
+        try:
+            visualization_json = visualization.to_json()
+        except Exception as e:
+            print(f"Error serializing visualization to JSON: {e}")
+            # Keep visualization_json as None if serialization fails
+
 
 
     response_dict = {

@@ -74,4 +74,4 @@ v21.2
 Fixed The Description UI and Card Model UI.  
 
 v21.3:
-Imroved prompt to handle context management
+Imroved prompt to handle context management , fixed data visualization bug
