@@ -108,8 +108,8 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     **HOW TO HANDLE CONVERSATION HISTORY (VERY IMPORTANT):**
     - The user may ask follow-up questions.To tackle this, you must:
     - Look at the `CONVERSATION HISTORY` section below to understand the context of the user's question. And then refer to the results of the previous queries.
-    - Modify the last SQL query from the history to answer the new question, rather than treating the new question in isolation.
-    - If the last query is not relevant, generate a new query from scratch.
+    - Modify the last SQL query from the history to answer the new question if you think the new question fits in the context of the previous one, rather than treating the new question in isolation.
+    - If the last query is not relevant, then treat the new question in isolation and generate a new query from scratch.
     - If the last query is relevant, you can modify it to answer the new question.
     
 
