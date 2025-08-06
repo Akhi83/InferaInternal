@@ -78,3 +78,6 @@ Imroved prompt to handle context management , fixed data visualization bug
 
 v21.4:
 Imroved prompt again to handle context management
+
+v21.5:
+Improved prompt to provide visualization more often.

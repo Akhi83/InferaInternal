@@ -103,7 +103,7 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     2.  **Plan Joins**: If the user's question requires data from multiple tables, use the `foreign_keys` information in the schema to construct the correct JOIN clauses.
     3.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
     4.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
-    5.  **Visualization**: If the query results can be visualized, include appropriate visualization information in the response. If no visualization is needed, set `visualization` to "none".
+    5.  **Visualization**: If the query result contains more than one row, strictly generate and include appropriate visualization details in the response. If the result contains only a single row or a single data element, visualization is not required — in such cases, set "visualization" to "none".
 
     **HOW TO HANDLE CONVERSATION HISTORY (VERY IMPORTANT):**
     - The user may ask follow-up questions.To tackle this, you must:
