@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Plot from 'react-plotly.js';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import { FiSend } from 'react-icons/fi';
+import PlotlyChart from '../PlotlyChart'; // 1. Import your custom PlotlyChart component
 import './DisplayPanel.css';
 
 const DisplayPanel = ({ messages, onSend, onEmptyClick, showInput }) => {
@@ -9,7 +9,7 @@ const DisplayPanel = ({ messages, onSend, onEmptyClick, showInput }) => {
   const textareaRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  // Auto-scroll messages ONLY
+  // Auto-scroll messages
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
@@ -111,28 +111,10 @@ const DisplayPanel = ({ messages, onSend, onEmptyClick, showInput }) => {
                           <p><strong>Visualization:</strong></p>
                           <p>{data.visualization.why}</p>
 
-                          {data.visualization.type !== "none" && data.results.length > 0 && data.visualization.x_axis && data.visualization.y_axis && (
+                          {/* 2. Replace the old Plot component with PlotlyChart */}
+                          {data.visualization.figure_json && (
                             <div className='visualization-scroll'>
-                              <Plot
-                                data={[{
-                                  type: data.visualization.type === "pie" ? "pie" : data.visualization.type,
-                                  x: data.visualization.type === "pie" ? undefined : data.results.map(row => row[data.visualization.x_axis]),
-                                  y: data.results.map(row => row[data.visualization.y_axis]),
-                                  labels: data.visualization.type === "pie" ? data.results.map(row => row[data.visualization.x_axis]) : undefined,
-                                  values: data.visualization.type === "pie" ? data.results.map(row => row[data.visualization.y_axis]) : undefined,
-                                  mode: data.visualization.type === "scatter" ? "markers" : undefined,
-                                  marker: data.visualization.color ? { color: data.results.map(row => row[data.visualization.color]) } : undefined,
-                                }]}
-                                layout={{
-                                  title: data.visualization.title || 'Visualization',
-                                  xaxis: { title: data.visualization.x_axis },
-                                  yaxis: { title: data.visualization.y_axis },
-                                  height: 400,
-                                  margin: { t: 40, l: 50, r: 30, b: 50 },
-                                }}
-                                config={{ responsive: true, displayModeBar: false }}
-                                style={{ width: '100%', height: '100%' }}
-                              />
+                              <PlotlyChart figureJson={data.visualization.figure_json} />
                             </div>
                           )}
                         </>

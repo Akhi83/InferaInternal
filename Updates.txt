@@ -81,3 +81,6 @@ Imroved prompt again to handle context management
 
 v21.5:
 Improved prompt to provide visualization more often.
+
+v21.6:
+Fixed generation and rendering of visualization

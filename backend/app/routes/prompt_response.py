@@ -104,6 +104,9 @@ def handle_llm_query():
     
     visualization = create_visualization(df, llm_response)
     visualization_json = None
+
+    print(visualization)
+    print(llm_response)
     
     if visualization and not (isinstance(visualization, dict) and 'error' in visualization):
         try:
