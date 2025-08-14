@@ -92,3 +92,4 @@ v21.7:
 1. Added More plots [ box plot, violin plot]
 2. Fixed Pie chart bug
 3. simplified exception handling for create visualization logic
+4. Change ai Model

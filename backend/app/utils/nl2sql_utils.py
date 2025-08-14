@@ -156,7 +156,7 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     try:
         client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=messages,
             temperature=0.0,  # Set to 0 for deterministic and accurate SQL generation
             response_format={"type": "json_object"} # Enforce JSON output
