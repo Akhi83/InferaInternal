@@ -8,18 +8,13 @@ const PlotlyChart = ({ figureJson }) => {
         if (figureJson && chartRef.current) {
             try {
                 const figure = JSON.parse(figureJson);
-                
-                // --- THIS IS THE FIX ---
-                // Using Plotly.react() instead of Plotly.newPlot()
-                // This function is designed for dynamic updates in React and
-                // will correctly change the chart type when new data arrives.
                 Plotly.react(chartRef.current, figure.data, figure.layout);
 
             } catch (e) {
                 console.error("Error parsing or rendering Plotly JSON:", e);
             }
         }
-    }, [figureJson]); // This effect re-runs whenever the figureJson prop changes
+    }, [figureJson]);
 
     return <div ref={chartRef} style={{ width: '100%', height: '100%' }} />;
 };

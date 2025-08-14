@@ -84,3 +84,8 @@ Improved prompt to provide visualization more often.
 
 v21.6:
 Fixed generation and rendering of visualization
+
+v21.7:
+1. Added More plots [ box plot, violin plot]
+2. Fixed Pie chart bug
+3. simplified exception handling for create visualization logic

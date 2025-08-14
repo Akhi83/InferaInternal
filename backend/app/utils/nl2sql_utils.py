@@ -101,9 +101,10 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     **Instructions:**
     1.  **Analyze the Schema**: The user will provide a schema with table names, column names, types, and descriptions. Use the `description` fields to understand the business context.
     2.  **Plan Joins**: If the user's question requires data from multiple tables, use the `foreign_keys` information in the schema to construct the correct JOIN clauses.
-    3.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
-    4.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
-    5.  **Visualization**: Strictly generate and include appropriate visualization details in the response. Do not set figure_json to null.
+    3.  **Provide Valid Query**: Ensure that you must provide valid queries that will execute Without errors especially for date time related values.
+    4.  **Safety First**: Never generate queries that modify the database (UPDATE, INSERT, DELETE, DROP, etc.). If the user asks for something unsafe or outside the schema's scope, respond that you cannot fulfill the request.
+    5.  **Strict JSON Output**: You MUST respond ONLY with a single, valid JSON object in the specified format. Do not include any other text, greetings, or explanations outside of the JSON structure.
+    6.  **Visualization**: Strictly generate and include appropriate visualization details in the response. Do not set figure_json to null, ensure proper column names are used in query and plot.
 
     **HOW TO HANDLE CONVERSATION HISTORY (VERY IMPORTANT):**
     - The user may ask follow-up questions.To tackle this, you must:
@@ -114,16 +115,18 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     
 
     **JSON Output Format:**
-    {
-        "explanation": "A brief explanation of your query, including which tables are being joined and why.",
-        "sql_query": "A single, complete, and valid SQL query. If the request is invalid or unsafe, this must be an empty string.",
-        "visualization": "bar/line/pie/scatter",
-        "visualization_explanation": "Why this visualization type is appropriate.",
-        "x_axis": "Column name for the x-axis (if visualization is needed).",
-        "y_axis": "Column name for the y-axis (if visualization is needed).",
-        "title": "A descriptive title for the visualization.",
-        "color": "Column name for color differentiation (optional)."
-    }
+        {
+            "explanation": "A brief explanation of your query, including which tables are being joined and why.",
+            "sql_query": "A single, complete, and valid SQL query. If the request is invalid or unsafe, this must be an empty string.",
+            "visualization": "bar/line/scatter/pie/box/violin/histogram",
+            "visualization_explanation": "Why this visualization type is appropriate.",
+            "x_axis": "Column name for the x-axis (if applicable, e.g., for bar, line).",
+            "y_axis": "Column name for the y-axis (if applicable, e.g., for bar, line).",
+            "names_axis": "Column name for categorical names (if applicable, e.g., for pie).",
+            "values_axis": "Column name for values (if applicable, e.g., for pie).",
+            "title": "A descriptive title for the visualization.",
+            "color": "Column name for color differentiation (optional)."
+        }
     """
 
     # 2. The User Prompt: Contains the data (schema) and the specific question.
@@ -166,40 +169,72 @@ def get_openai_response(question, schema_info, history=[], api_key=None):
     except Exception as e:
         return None, f"Error communicating with OpenAI API: {str(e)}"
 
-
 def create_visualization(df, viz_info):
     """ Creates a Plotly figure from a DataFrame and visualization info. """
     if not isinstance(df, pd.DataFrame):
-        df = pd.DataFrame(df) # Ensure df is a DataFrame
-
+        df = pd.DataFrame(df)
+    
     viz_type = viz_info.get("visualization", "none")
     if viz_type == "none" or df.empty:
         return None
     
     x_axis = viz_info.get("x_axis")
     y_axis = viz_info.get("y_axis")
+    names_axis = viz_info.get("names_axis")
+    values_axis = viz_info.get("values_axis")
     title = viz_info.get("title", "Data Visualization")
     color = viz_info.get("color")
-
-    # FIX: Add this check to handle empty color strings
+    
     if not color:
         color = None
-    
-    if x_axis not in df.columns or y_axis not in df.columns:
-        return {"error": f"Specified columns for visualization not found in query results."}
-    
+        
     try:
         if viz_type == "bar":
-            fig = px.bar(df, x=x_axis, y=y_axis, color=color, title=title)
+            if x_axis not in df.columns or y_axis not in df.columns:
+                return {"error": f"Required columns 'x_axis' or 'y_axis' not found for bar plot."}
+            fig = px.bar(data_frame=df, x=x_axis, y=y_axis, color=color, title=title)
+        
         elif viz_type == "line":
-            fig = px.line(df, x=x_axis, y=y_axis, color=color, title=title)
+            if x_axis not in df.columns or y_axis not in df.columns:
+                return {"error": f"Required columns 'x_axis' or 'y_axis' not found for line plot."}
+            fig = px.line(data_frame=df, x=x_axis, y=y_axis, color=color, title=title)
+        
         elif viz_type == "pie":
-            fig = px.pie(df, names=x_axis, values=y_axis, title=title)
+            if names_axis not in df.columns or values_axis not in df.columns:
+                return {"error": f"Required columns 'names_axis' or 'values_axis' not found for pie chart."}
+            fig = px.pie(data_frame=df, names=names_axis, values=values_axis, title=title)
+        
         elif viz_type == "scatter":
-            fig = px.scatter(df, x=x_axis, y=y_axis, color=color, title=title)
+            if x_axis not in df.columns or y_axis not in df.columns:
+                return {"error": f"Required columns 'x_axis' or 'y_axis' not found for scatter plot."}
+            fig = px.scatter(data_frame=df, x=x_axis, y=y_axis, color=color, title=title)
+        
+        elif viz_type == "histogram":
+            if x_axis not in df.columns:
+                return {"error": f"Required column 'x_axis' not found for histogram."}
+            fig = px.histogram(data_frame=df, x=x_axis, color=color, title=title)
+        
+        elif viz_type == "box":
+            if x_axis and x_axis in df.columns and y_axis and y_axis in df.columns:
+                fig = px.box(data_frame=df, x=x_axis, y=y_axis, color=color, title=title)
+            elif y_axis and y_axis in df.columns:
+                fig = px.box(data_frame=df, y=y_axis, color=color, title=title)
+            else:
+                return {"error": f"Required columns 'y_axis' (and optionally 'x_axis') not found for box plot."}
+
+        
+        elif viz_type == "violin":
+            if x_axis not in df.columns or y_axis not in df.columns:
+                return {"error": f"Required columns 'x_axis' or 'y_axis' not found for violin plot."}
+            fig = px.violin(data_frame=df, x=x_axis, y=y_axis, color=color, title=title)
+        
+        elif viz_type == "none":
+            return {"message": "No visualization required here."}
         else:
             return {"error": f"Unsupported visualization type: {viz_type}"}
+        
         return fig
+    
     except Exception as e:
         return {"error": f"Error creating visualization: {str(e)}"}
 
