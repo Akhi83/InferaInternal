@@ -84,3 +84,6 @@ Improved prompt to provide visualization more often.
 
 v21.6:
 Fixed generation and rendering of visualization
+Handled prompt for facilitating comlex queries
+
+
